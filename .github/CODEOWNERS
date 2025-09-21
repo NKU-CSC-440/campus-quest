@@ -1,0 +1,6 @@
+# This is a GitHub CODEOWNERS file
+# Each line is a file pattern followed by one or more owners
+
+# All files in the repository
+* @murphyt5 @woodsd8 @zsarge
+
