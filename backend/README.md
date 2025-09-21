@@ -1,5 +1,11 @@
 # README
 
+## Installing Ruby on Rails
+
+<https://guides.rubyonrails.org/install_ruby_on_rails.html>
+
+---
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
