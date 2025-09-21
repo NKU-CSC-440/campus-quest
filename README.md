@@ -8,6 +8,8 @@
 
 ## Versions
 
+You should install versions greater than or equal to:
+
 | Tool     | Version                        |
 |----------|--------------------------------|
 | Rails    | 8.0.2.1                        |
