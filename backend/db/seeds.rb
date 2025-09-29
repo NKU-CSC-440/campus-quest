@@ -7,3 +7,24 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+# db/seeds.rb
+
+# Clear out existing users so reseeding is idempotent
+User.destroy_all
+
+# Create a teacher
+User.create!(
+  name: "Alice Teacher",
+  email: "alice@nku.edu",
+  role: :teacher
+)
+
+# Create a student
+User.create!(
+  name: "Bob Student",
+  email: "bob@nku.edu",
+  role: :student
+)
+
+puts "Seeded #{User.count} users."
+
