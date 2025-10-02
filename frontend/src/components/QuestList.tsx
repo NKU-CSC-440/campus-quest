@@ -20,7 +20,6 @@ import {
   Stack,
 } from "@mui/material";
 import { getQuests, createQuest, createCompletion, type Quest } from "../dao/QuestDAO";
-import { Helmet } from "react-helmet-async";
 
 type Props = {
   currentUserId: number; // prototype: pass the logged-in user ID
@@ -99,11 +98,6 @@ export default function QuestList({ currentUserId }: Props) {
 
   return (
     <Container maxWidth="md">
-      <Helmet>
-        <title>Quest List | Campus Quest</title>
-        <meta name="description" content="View and manage all your Campus Quest quests." />
-      </Helmet>
-
       <Box sx={{ my: 4 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h4">Quests</Typography>

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 
 set -e # stop immediately on errors
 set -o pipefail # do not silently ignore errors in pipelines
