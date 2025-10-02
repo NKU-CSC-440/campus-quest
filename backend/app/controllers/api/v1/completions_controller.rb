@@ -6,7 +6,7 @@ class Api::V1::CompletionsController < ApplicationController
 	if completion.save
 	  render json: completion, status: :created
 	else
-	  render json: { errors: completion.errors.full_messages }, status: :unprocessable_entity
+	render json: { errors: completion.errors.full_messages }, status: :unprocessable_content
 	end
   end
 
