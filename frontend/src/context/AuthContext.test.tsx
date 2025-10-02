@@ -13,7 +13,9 @@ const TestComponent: React.FC = () => {
       <div data-testid="user">{user ? user.email : "null"}</div>
       <div data-testid="loading">{loading ? "loading" : "not-loading"}</div>
       <div data-testid="error">{error || "no-error"}</div>
-      <button onClick={() => login("test@example.com", "password123")}>Login</button>
+      <button onClick={() => login("test@example.com", "password123")}>
+        Login
+      </button>
       <button onClick={() => logout()}>Logout</button>
       <button onClick={() => checkSession()}>CheckSession</button>
     </div>
@@ -32,7 +34,9 @@ describe("AuthContext", () => {
         <TestComponent />
       </AuthProvider>
     );
-    await waitFor(() => expect(getByTestId("loading").textContent).toBe("not-loading"));
+    await waitFor(() =>
+      expect(getByTestId("loading").textContent).toBe("not-loading")
+    );
     expect(getByTestId("user").textContent).toBe("null");
     expect(getByTestId("error").textContent).toBe("no-error");
   });
@@ -51,7 +55,9 @@ describe("AuthContext", () => {
     await act(async () => {
       getByText("Login").click();
     });
-    await waitFor(() => expect(getByTestId("user").textContent).toBe("test@example.com"));
+    await waitFor(() =>
+      expect(getByTestId("user").textContent).toBe("test@example.com")
+    );
     expect(getByTestId("error").textContent).toBe("no-error");
   });
 
@@ -66,7 +72,9 @@ describe("AuthContext", () => {
     await act(async () => {
       getByText("Login").click();
     });
-    await waitFor(() => expect(getByTestId("error").textContent).not.toBe("no-error"));
+    await waitFor(() =>
+      expect(getByTestId("error").textContent).not.toBe("no-error")
+    );
     expect(getByTestId("user").textContent).toBe("null");
   });
 
@@ -85,7 +93,9 @@ describe("AuthContext", () => {
     await act(async () => {
       getByText("Login").click();
     });
-    await waitFor(() => expect(getByTestId("user").textContent).toBe("test@example.com"));
+    await waitFor(() =>
+      expect(getByTestId("user").textContent).toBe("test@example.com")
+    );
     await act(async () => {
       getByText("Logout").click();
     });
@@ -106,7 +116,9 @@ describe("AuthContext", () => {
     await act(async () => {
       getByText("CheckSession").click();
     });
-    await waitFor(() => expect(getByTestId("user").textContent).toBe("test@example.com"));
+    await waitFor(() =>
+      expect(getByTestId("user").textContent).toBe("test@example.com")
+    );
   });
 
   it("checkSession sets user to null when not logged in", async () => {
