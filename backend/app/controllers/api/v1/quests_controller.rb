@@ -1,4 +1,5 @@
 class Api::V1::QuestsController < ApplicationController
+  before_action :authenticate_user!
   # GET /api/v1/quests
   def index
 	quests = Quest.all

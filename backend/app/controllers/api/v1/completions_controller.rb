@@ -1,4 +1,5 @@
 class Api::V1::CompletionsController < ApplicationController
+	before_action :authenticate_user!
   # POST /api/v1/completions
   def create
 	completion = Completion.new(completion_params)
