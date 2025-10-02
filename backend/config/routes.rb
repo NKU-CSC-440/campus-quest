@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  post "/login", to: "sessions#create"
-  delete "/logout", to: "sessions#destroy"
-  get "/me", to: "sessions#show"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -9,10 +6,13 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   namespace :api do
-	namespace :v1 do
-	  resources :quests, only: [:index, :show, :create]
-	  resources :completions, only: [:create]
-	end
+    namespace :v1 do
+      post "/login", to: "sessions#create"
+      delete "/logout", to: "sessions#destroy"
+      get "/me", to: "sessions#show"
+      resources :quests, only: [:index, :show, :create]
+      resources :completions, only: [:create]
+    end
   end
 
   # Defines the root path route ("/")
