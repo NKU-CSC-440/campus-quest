@@ -1,7 +1,7 @@
 // src/utils/date.ts
 export function formatRelativeTimeWithTooltip(dateStr: string | Date) {
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return { display: "", full: "" };
+  if (isNaN(date.getTime())) return { display: '', full: '' };
 
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -11,13 +11,13 @@ export function formatRelativeTimeWithTooltip(dateStr: string | Date) {
   const hours = Math.round(minutes / 60);
   const days = Math.round(hours / 24);
 
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
 
-  let display = "";
-  if (Math.abs(seconds) < 60) display = rtf.format(-seconds, "second");
-  else if (Math.abs(minutes) < 60) display = rtf.format(-minutes, "minute");
-  else if (Math.abs(hours) < 24) display = rtf.format(-hours, "hour");
-  else display = rtf.format(-days, "day");
+  let display = '';
+  if (Math.abs(seconds) < 60) display = rtf.format(-seconds, 'second');
+  else if (Math.abs(minutes) < 60) display = rtf.format(-minutes, 'minute');
+  else if (Math.abs(hours) < 24) display = rtf.format(-hours, 'hour');
+  else display = rtf.format(-days, 'day');
 
   return {
     display,

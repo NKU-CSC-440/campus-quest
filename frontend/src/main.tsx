@@ -1,17 +1,17 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { HelmetProvider } from "react-helmet-async";
-import AppTheme from "./components/AppTheme";
-import Layout from "./components/Layout";
-import QuestDashboard from "./components/QuestDashboard";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import AppTheme from './components/AppTheme';
+import App from './App';
+import { AuthProvider } from './context/AuthContext';
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
       <AppTheme>
-        <Layout>
-          <QuestDashboard currentUserId={1} />
-        </Layout>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </AppTheme>
     </HelmetProvider>
   </React.StrictMode>

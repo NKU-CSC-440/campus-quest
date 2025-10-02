@@ -6,10 +6,13 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   namespace :api do
-	namespace :v1 do
-	  resources :quests, only: [:index, :show, :create]
-	  resources :completions, only: [:create]
-	end
+    namespace :v1 do
+      post "/login", to: "sessions#create", as: :login
+      delete "/logout", to: "sessions#destroy", as: :logout
+      get "/me", to: "sessions#show", as: :me
+      resources :quests, only: [ :index, :show, :create ]
+      resources :completions, only: [ :create ]
+    end
   end
 
   # Defines the root path route ("/")

@@ -16,6 +16,8 @@ User.destroy_all
 User.create!(
   name: "Alice Teacher",
   email: "alice@nku.edu",
+  password: "password",
+  password_confirmation: "password",
   role: :teacher
 )
 
@@ -23,8 +25,9 @@ User.create!(
 User.create!(
   name: "Bob Student",
   email: "bob@nku.edu",
+  password: "password",
+  password_confirmation: "password",
   role: :student
 )
 
 puts "Seeded #{User.count} users."
-
