@@ -1,9 +1,6 @@
 import { API_BASE } from "../lib/config";
 
-export enum Role {
-  Teacher = "teacher",
-  Student = "student",
-}
+export type Role = "teacher" | "student";
 
 export interface User {
   id: number;
@@ -31,8 +28,6 @@ export interface Completion {
   updated_at: string;
 }
 
-// const API_BASE = "http://localhost:3000/api/v1"; // adjust if needed
-
 // --- Quests ---
 export async function getQuests(): Promise<Quest[]> {
   const res = await fetch(`${API_BASE}/quests`);
@@ -46,7 +41,10 @@ export async function getQuest(id: number): Promise<Quest> {
   return res.json();
 }
 
-export async function createQuest(data: { title: string; description: string }): Promise<Quest> {
+export async function createQuest(data: {
+  title: string;
+  description: string;
+}): Promise<Quest> {
   const res = await fetch(`${API_BASE}/quests`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -57,7 +55,11 @@ export async function createQuest(data: { title: string; description: string }):
 }
 
 // --- Completions ---
-export async function createCompletion(data: { user_id: number; quest_id: number; completed_at: string }): Promise<Completion> {
+export async function createCompletion(data: {
+  user_id: number;
+  quest_id: number;
+  completed_at: string;
+}): Promise<Completion> {
   const res = await fetch(`${API_BASE}/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -66,4 +68,3 @@ export async function createCompletion(data: { user_id: number; quest_id: number
   if (!res.ok) throw new Error("Failed to create completion");
   return res.json();
 }
-
