@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Box,
+  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -22,7 +23,8 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const location = useLocation();
+  const { user, logout } = useAuth();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -63,26 +65,39 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
           Campus Quest
         </Typography>
 
-        {/* User Menu */}
-        <Box>
-          <IconButton
-            size="large"
-            edge="end"
-            color="inherit"
-            onClick={handleMenu}
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            <MenuItem onClick={handleProfile}>Profile</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
+        {/* User Menu or Login Button */}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {user ? (
+            <>
+              <Typography variant="body1" sx={{ mr: 2 }}>
+                Hello, {user.name}
+              </Typography>
+              <IconButton
+                size="large"
+                edge="end"
+                color="inherit"
+                onClick={handleMenu}
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            location.pathname !== "/login" && (
+              <Button color="inherit" onClick={() => navigate("/login")}>
+                Login
+              </Button>
+            )
+          )}
         </Box>
       </Toolbar>
     </AppBar>
