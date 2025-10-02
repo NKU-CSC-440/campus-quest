@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -20,6 +22,7 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -34,8 +37,9 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
     navigate("/profile");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     handleClose();
+    await logout();
     navigate("/login");
   };
 
