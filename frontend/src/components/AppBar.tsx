@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -11,9 +11,9 @@ import {
   MenuItem,
   Box,
   Button,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 type Props = {
   toggleCollapse: () => void;
@@ -36,28 +36,20 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
 
   const handleProfile = () => {
     handleClose();
-    navigate("/profile");
+    navigate('/profile');
   };
 
   const handleLogout = async () => {
     handleClose();
     await logout();
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-    >
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
         {/* Hamburger toggle */}
-        <IconButton
-          color="inherit"
-          edge="start"
-          onClick={toggleCollapse}
-          sx={{ mr: 2 }}
-        >
+        <IconButton color="inherit" edge="start" onClick={toggleCollapse} sx={{ mr: 2 }}>
           <MenuIcon />
         </IconButton>
 
@@ -66,34 +58,29 @@ export default function MenuAppBar({ toggleCollapse }: Props) {
         </Typography>
 
         {/* User Menu or Login Button */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {user ? (
             <>
               <Typography variant="body1" sx={{ mr: 2 }}>
                 Hello, {user.name}
               </Typography>
-              <IconButton
-                size="large"
-                edge="end"
-                color="inherit"
-                onClick={handleMenu}
-              >
+              <IconButton size="large" edge="end" color="inherit" onClick={handleMenu}>
                 <AccountCircle />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               >
                 <MenuItem onClick={handleProfile}>Profile</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </>
           ) : (
-            location.pathname !== "/login" && (
-              <Button color="inherit" onClick={() => navigate("/login")}>
+            location.pathname !== '/login' && (
+              <Button color="inherit" onClick={() => navigate('/login')}>
                 Login
               </Button>
             )

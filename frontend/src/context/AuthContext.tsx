@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { API_BASE } from "../lib/config";
-import { type User } from "../dao/QuestDAO";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE } from '../lib/config';
+import { type User } from '../dao/QuestDAO';
 
 interface AuthContextType {
   user: User | null;
@@ -13,9 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,16 +29,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       const res = await fetch(`${API_BASE}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
+        credentials: 'include',
       });
-      if (!res.ok) throw new Error("Invalid email or password");
+      if (!res.ok) throw new Error('Invalid email or password');
       const data = await res.json();
       setUser(data.user);
     } catch (e: any) {
-      setError(e.message || "Login failed");
+      setError(e.message || 'Login failed');
       setUser(null);
     } finally {
       setLoading(false);
@@ -52,12 +50,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       await fetch(`${API_BASE}/logout`, {
-        method: "DELETE",
-        credentials: "include",
+        method: 'DELETE',
+        credentials: 'include',
       });
       setUser(null);
     } catch (e: any) {
-      setError(e.message || "Logout failed");
+      setError(e.message || 'Logout failed');
     } finally {
       setLoading(false);
     }
@@ -68,9 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       const res = await fetch(`${API_BASE}/me`, {
-        credentials: "include",
+        credentials: 'include',
       });
-      if (!res.ok) throw new Error("Not logged in");
+      if (!res.ok) throw new Error('Not logged in');
       const data = await res.json();
       setUser(data.user);
     } catch (e: any) {
@@ -81,9 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, error, login, logout, checkSession }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, login, logout, checkSession }}>
       {children}
     </AuthContext.Provider>
   );
@@ -91,6 +87,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
