@@ -31,4 +31,3 @@ User.create!(
 )
 
 puts "Seeded #{User.count} users."
-

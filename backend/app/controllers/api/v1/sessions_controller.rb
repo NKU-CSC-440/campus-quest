@@ -7,13 +7,13 @@ module Api
           session[:user_id] = user.id
           render json: { user: user }, status: :ok
         else
-          render json: { error: 'Invalid email or password' }, status: :unauthorized
+          render json: { error: "Invalid email or password" }, status: :unauthorized
         end
       end
 
       def destroy
         session[:user_id] = nil
-        render json: { message: 'Logged out' }, status: :ok
+        render json: { message: "Logged out" }, status: :ok
       end
 
       def show
@@ -21,7 +21,7 @@ module Api
           user = User.find_by(id: session[:user_id])
           render json: { user: user }, status: :ok
         else
-          render json: { error: 'Not logged in' }, status: :unauthorized
+          render json: { error: "Not logged in" }, status: :unauthorized
         end
       end
     end
