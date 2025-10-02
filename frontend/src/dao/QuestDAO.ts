@@ -30,13 +30,15 @@ export interface Completion {
 
 // --- Quests ---
 export async function getQuests(): Promise<Quest[]> {
-  const res = await fetch(`${API_BASE}/quests`);
+  const res = await fetch(`${API_BASE}/quests`, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to fetch quests");
   return res.json();
 }
 
 export async function getQuest(id: number): Promise<Quest> {
-  const res = await fetch(`${API_BASE}/quests/${id}`);
+  const res = await fetch(`${API_BASE}/quests/${id}`, {
+    credentials: "include",
+  });
   if (!res.ok) throw new Error("Failed to fetch quest");
   return res.json();
 }
@@ -49,6 +51,7 @@ export async function createQuest(data: {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ quest: data }),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to create quest");
   return res.json();
@@ -64,6 +67,7 @@ export async function createCompletion(data: {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ completion: data }),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to create completion");
   return res.json();
