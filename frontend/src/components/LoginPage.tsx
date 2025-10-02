@@ -1,19 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Box, Button, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 
 export default function LoginPage() {
   const { login, loading, error, user } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
@@ -28,13 +21,13 @@ export default function LoginPage() {
     if (user) {
       setSuccess(true);
       // Redirect after a short delay for feedback
-      const timer = setTimeout(() => navigate("/"), 800);
+      const timer = setTimeout(() => navigate('/'), 800);
       return () => clearTimeout(timer);
     }
   }, [user, navigate]);
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 8 }}>
+    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8 }}>
       <Typography variant="h4" gutterBottom>
         Login
       </Typography>
@@ -65,7 +58,7 @@ export default function LoginPage() {
           disabled={loading}
           sx={{ mt: 2 }}
         >
-          {loading ? <CircularProgress size={24} /> : "Log In"}
+          {loading ? <CircularProgress size={24} /> : 'Log In'}
         </Button>
       </form>
       {error && (

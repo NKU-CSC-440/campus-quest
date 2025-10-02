@@ -1,6 +1,6 @@
-import { API_BASE } from "../lib/config";
+import { API_BASE } from '../lib/config';
 
-export type Role = "teacher" | "student";
+export type Role = 'teacher' | 'student';
 
 export interface User {
   id: number;
@@ -30,30 +30,27 @@ export interface Completion {
 
 // --- Quests ---
 export async function getQuests(): Promise<Quest[]> {
-  const res = await fetch(`${API_BASE}/quests`, { credentials: "include" });
-  if (!res.ok) throw new Error("Failed to fetch quests");
+  const res = await fetch(`${API_BASE}/quests`, { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to fetch quests');
   return res.json();
 }
 
 export async function getQuest(id: number): Promise<Quest> {
   const res = await fetch(`${API_BASE}/quests/${id}`, {
-    credentials: "include",
+    credentials: 'include',
   });
-  if (!res.ok) throw new Error("Failed to fetch quest");
+  if (!res.ok) throw new Error('Failed to fetch quest');
   return res.json();
 }
 
-export async function createQuest(data: {
-  title: string;
-  description: string;
-}): Promise<Quest> {
+export async function createQuest(data: { title: string; description: string }): Promise<Quest> {
   const res = await fetch(`${API_BASE}/quests`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ quest: data }),
-    credentials: "include",
+    credentials: 'include',
   });
-  if (!res.ok) throw new Error("Failed to create quest");
+  if (!res.ok) throw new Error('Failed to create quest');
   return res.json();
 }
 
@@ -64,11 +61,11 @@ export async function createCompletion(data: {
   completed_at: string;
 }): Promise<Completion> {
   const res = await fetch(`${API_BASE}/completions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ completion: data }),
-    credentials: "include",
+    credentials: 'include',
   });
-  if (!res.ok) throw new Error("Failed to create completion");
+  if (!res.ok) throw new Error('Failed to create completion');
   return res.json();
 }

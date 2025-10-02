@@ -1,11 +1,11 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import QuestList from "./components/QuestList";
-import ProfilePage from "./components/ProfilePage";
-import LoginPage from "./components/LoginPage";
-import MenuAppBar from "./components/AppBar";
-import QuestDashboard from "./components/QuestDashboard";
-import Layout from "./components/Layout";
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import QuestList from './components/QuestList';
+import ProfilePage from './components/ProfilePage';
+import LoginPage from './components/LoginPage';
+import MenuAppBar from './components/AppBar';
+import QuestDashboard from './components/QuestDashboard';
+import Layout from './components/Layout';
 
 function App() {
   // For now, use a hardcoded user ID for QuestList
