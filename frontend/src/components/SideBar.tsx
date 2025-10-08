@@ -8,11 +8,11 @@ import {
   Toolbar,
   Divider,
   Box,
-} from "@mui/material";
-import ReportIcon from "@mui/icons-material/BarChart";
-import QuestIcon from "@mui/icons-material/PriorityHigh";
-import ApprovalsIcon from "@mui/icons-material/Checklist";
-import SettingsIcon from "@mui/icons-material/Settings";
+} from '@mui/material';
+import ReportIcon from '@mui/icons-material/BarChart';
+import QuestIcon from '@mui/icons-material/PriorityHigh';
+import ApprovalsIcon from '@mui/icons-material/Checklist';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const expandedWidth = 240;
 const collapsedWidth = 64;
@@ -28,13 +28,13 @@ export default function SideBar({ collapsed }: Props) {
       sx={{
         width: collapsed ? collapsedWidth : expandedWidth,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
+        '& .MuiDrawer-paper': {
           width: collapsed ? collapsedWidth : expandedWidth,
-          transition: "width 0.3s",
-          overflowX: "hidden",
-          display: "flex",
-          flexDirection: "column", // 👈 makes it easy to push settings to bottom
-          justifyContent: "space-between",
+          transition: 'width 0.3s',
+          overflowX: 'hidden',
+          display: 'flex',
+          flexDirection: 'column', // 👈 makes it easy to push settings to bottom
+          justifyContent: 'space-between',
         },
       }}
     >
@@ -43,15 +43,13 @@ export default function SideBar({ collapsed }: Props) {
         <Toolbar />
         <Divider />
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{ justifyContent: collapsed ? "center" : "initial", px: 2.5 }}
-            >
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: collapsed ? "auto" : 2,
-                  justifyContent: "center",
+                  mr: collapsed ? 'auto' : 2,
+                  justifyContent: 'center',
                 }}
               >
                 <QuestIcon />
@@ -60,15 +58,13 @@ export default function SideBar({ collapsed }: Props) {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{ justifyContent: collapsed ? "center" : "initial", px: 2.5 }}
-            >
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: collapsed ? "auto" : 2,
-                  justifyContent: "center",
+                  mr: collapsed ? 'auto' : 2,
+                  justifyContent: 'center',
                 }}
               >
                 <ReportIcon />
@@ -77,15 +73,13 @@ export default function SideBar({ collapsed }: Props) {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{ justifyContent: collapsed ? "center" : "initial", px: 2.5 }}
-            >
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: collapsed ? "auto" : 2,
-                  justifyContent: "center",
+                  mr: collapsed ? 'auto' : 2,
+                  justifyContent: 'center',
                 }}
               >
                 <ApprovalsIcon />
@@ -100,15 +94,13 @@ export default function SideBar({ collapsed }: Props) {
       <Box>
         <Divider />
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{ justifyContent: collapsed ? "center" : "initial", px: 2.5 }}
-            >
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: collapsed ? "auto" : 2,
-                  justifyContent: "center",
+                  mr: collapsed ? 'auto' : 2,
+                  justifyContent: 'center',
                 }}
               >
                 <SettingsIcon />
