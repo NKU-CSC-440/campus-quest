@@ -1,19 +1,19 @@
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import type { ThemeOptions } from "@mui/material/styles";
-import type { ReactNode } from "react";
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import type { ThemeOptions } from '@mui/material/styles';
+import type { ReactNode } from 'react';
 
 const darkThemeOptions: ThemeOptions = {
   palette: {
-    mode: "dark",
+    mode: 'dark',
     primary: {
-      main: "#90caf9", // bluish primary
+      main: '#90caf9', // bluish primary
     },
     secondary: {
-      main: "#f48fb1", // pink accent
+      main: '#f48fb1', // pink accent
     },
     background: {
-      default: "#121212",
-      paper: "#1e1e1e",
+      default: '#121212',
+      paper: '#1e1e1e',
     },
   },
   typography: {

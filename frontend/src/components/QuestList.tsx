@@ -1,5 +1,4 @@
-// QuestList.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -18,9 +17,9 @@ import {
   Snackbar,
   Alert,
   Stack,
-} from "@mui/material";
-import { getQuests, createQuest, createCompletion, type Quest } from "../dao/QuestDAO";
-import { Helmet } from "react-helmet-async";
+} from '@mui/material';
+import { getQuests, createQuest, createCompletion, type Quest } from '../dao/QuestDAO';
+import { Helmet } from 'react-helmet-async';
 
 type Props = {
   currentUserId: number; // prototype: pass the logged-in user ID
@@ -32,13 +31,17 @@ export default function QuestList({ currentUserId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: "success" | "error" }>({
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    msg: string;
+    severity: 'success' | 'error';
+  }>({
     open: false,
-    msg: "",
-    severity: "success",
+    msg: '',
+    severity: 'success',
   });
 
   useEffect(() => {
@@ -47,7 +50,7 @@ export default function QuestList({ currentUserId }: Props) {
         const data = await getQuests();
         setQuests(data);
       } catch (e: any) {
-        setError(e.message || "Failed to load quests");
+        setError(e.message || 'Failed to load quests');
       } finally {
         setLoading(false);
       }
@@ -59,11 +62,15 @@ export default function QuestList({ currentUserId }: Props) {
       const q = await createQuest({ title, description });
       setQuests((prev) => [...prev, q]);
       setCreateOpen(false);
-      setTitle("");
-      setDescription("");
-      setSnack({ open: true, msg: "Quest created", severity: "success" });
+      setTitle('');
+      setDescription('');
+      setSnack({ open: true, msg: 'Quest created', severity: 'success' });
     } catch (e: any) {
-      setSnack({ open: true, msg: e.message || "Failed to create quest", severity: "error" });
+      setSnack({
+        open: true,
+        msg: e.message || 'Failed to create quest',
+        severity: 'error',
+      });
     }
   };
 
@@ -74,17 +81,27 @@ export default function QuestList({ currentUserId }: Props) {
         quest_id: questId,
         completed_at: new Date().toISOString(),
       });
-      setSnack({ open: true, msg: "Quest marked as completed", severity: "success" });
+      setSnack({
+        open: true,
+        msg: 'Quest marked as completed',
+        severity: 'success',
+      });
       // Optional: refetch quests or optimistic UI update if you show completion state
     } catch (e: any) {
-      setSnack({ open: true, msg: e.message || "Failed to mark completion", severity: "error" });
+      setSnack({
+        open: true,
+        msg: e.message || 'Failed to mark completion',
+        severity: 'error',
+      });
     }
   };
 
   if (loading) {
     return (
       <Container maxWidth="md">
-        <Typography variant="h6" sx={{ mt: 4 }}>Loading quests…</Typography>
+        <Typography variant="h6" sx={{ mt: 4 }}>
+          Loading quests…
+        </Typography>
       </Container>
     );
   }
@@ -92,7 +109,9 @@ export default function QuestList({ currentUserId }: Props) {
   if (error) {
     return (
       <Container maxWidth="md">
-        <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>
+        <Alert severity="error" sx={{ mt: 4 }}>
+          {error}
+        </Alert>
       </Container>
     );
   }
@@ -107,7 +126,9 @@ export default function QuestList({ currentUserId }: Props) {
       <Box sx={{ my: 4 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h4">Quests</Typography>
-          <Button variant="contained" onClick={() => setCreateOpen(true)}>New quest</Button>
+          <Button variant="contained" onClick={() => setCreateOpen(true)}>
+            New quest
+          </Button>
         </Stack>
 
         <Paper variant="outlined">
@@ -122,7 +143,8 @@ export default function QuestList({ currentUserId }: Props) {
                         {q.description}
                         <br />
                         <Typography component="span" variant="caption" color="text.secondary">
-                          Created: {new Date(q.created_at).toLocaleString()} • Updated: {new Date(q.updated_at).toLocaleString()}
+                          Created: {new Date(q.created_at).toLocaleString()} • Updated:{' '}
+                          {new Date(q.updated_at).toLocaleString()}
                         </Typography>
                       </>
                     }
@@ -175,7 +197,7 @@ export default function QuestList({ currentUserId }: Props) {
         open={snack.open}
         autoHideDuration={3000}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert severity={snack.severity} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
           {snack.msg}
@@ -184,4 +206,3 @@ export default function QuestList({ currentUserId }: Props) {
     </Container>
   );
 }
-

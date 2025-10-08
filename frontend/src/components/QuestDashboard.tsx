@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -12,19 +12,14 @@ import {
   Snackbar,
   Alert,
   Tooltip,
-} from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import type { GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import { Helmet } from "react-helmet-async";
+} from '@mui/material';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import type { GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import { Helmet } from 'react-helmet-async';
 
-import {
-  getQuests,
-  createQuest,
-  createCompletion,
-  type Quest,
-} from "../dao/QuestDAO";
+import { getQuests, createQuest, createCompletion, type Quest } from '../dao/QuestDAO';
 
-import { formatRelativeTimeWithTooltip } from "../utils/date";
+import { formatRelativeTimeWithTooltip } from '../utils/date';
 
 type Props = {
   currentUserId: number;
@@ -36,14 +31,14 @@ export default function QuestDashboard({ currentUserId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
-    severity: "success" | "error";
-  }>({ open: false, msg: "", severity: "success" });
+    severity: 'success' | 'error';
+  }>({ open: false, msg: '', severity: 'success' });
 
   useEffect(() => {
     (async () => {
@@ -51,7 +46,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
         const data = await getQuests();
         setQuests(data);
       } catch (e: any) {
-        setError(e.message || "Failed to load quests");
+        setError(e.message || 'Failed to load quests');
       } finally {
         setLoading(false);
       }
@@ -63,14 +58,14 @@ export default function QuestDashboard({ currentUserId }: Props) {
       const q = await createQuest({ title, description });
       setQuests((prev) => [...prev, q]);
       setCreateOpen(false);
-      setTitle("");
-      setDescription("");
-      setSnack({ open: true, msg: "Quest created", severity: "success" });
+      setTitle('');
+      setDescription('');
+      setSnack({ open: true, msg: 'Quest created', severity: 'success' });
     } catch (e: any) {
       setSnack({
         open: true,
-        msg: e.message || "Failed to create quest",
-        severity: "error",
+        msg: e.message || 'Failed to create quest',
+        severity: 'error',
       });
     }
   };
@@ -84,14 +79,14 @@ export default function QuestDashboard({ currentUserId }: Props) {
       });
       setSnack({
         open: true,
-        msg: "Quest marked as completed",
-        severity: "success",
+        msg: 'Quest marked as completed',
+        severity: 'success',
       });
     } catch (e: any) {
       setSnack({
         open: true,
-        msg: e.message || "Failed to mark completion",
-        severity: "error",
+        msg: e.message || 'Failed to mark completion',
+        severity: 'error',
       });
     }
   };
@@ -105,12 +100,12 @@ export default function QuestDashboard({ currentUserId }: Props) {
   }));
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 80 },
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "description", headerName: "Description", flex: 2 },
+    { field: 'id', headerName: 'ID', width: 80 },
+    { field: 'title', headerName: 'Title', flex: 1 },
+    { field: 'description', headerName: 'Description', flex: 2 },
     {
-      field: "created_at",
-      headerName: "Created",
+      field: 'created_at',
+      headerName: 'Created',
       width: 180,
       renderCell: (params) => {
         const { display, full } = formatRelativeTimeWithTooltip(params.value);
@@ -122,8 +117,8 @@ export default function QuestDashboard({ currentUserId }: Props) {
       },
     },
     {
-      field: "updated_at",
-      headerName: "Updated",
+      field: 'updated_at',
+      headerName: 'Updated',
       width: 180,
       renderCell: (params) => {
         const { display, full } = formatRelativeTimeWithTooltip(params.value);
@@ -135,15 +130,11 @@ export default function QuestDashboard({ currentUserId }: Props) {
       },
     },
     {
-      field: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      headerName: 'Actions',
       width: 200,
       renderCell: (params) => (
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => handleComplete(params.row.id)}
-        >
+        <Button size="small" variant="outlined" onClick={() => handleComplete(params.row.id)}>
           Complete
         </Button>
       ),
@@ -166,17 +157,17 @@ export default function QuestDashboard({ currentUserId }: Props) {
         <Box
           sx={{
             flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
           }}
         >
           <Box
             sx={{
               mb: 2,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <Typography variant="h4">Quests</Typography>
@@ -186,7 +177,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
           </Box>
 
           {/* DataGrid */}
-          <Paper sx={{ flexGrow: 1, width: "100%" }}>
+          <Paper sx={{ flexGrow: 1, width: '100%' }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -200,12 +191,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
       )}
 
       {/* Create dialog */}
-      <Dialog
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
+      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>Create a quest</DialogTitle>
         <DialogContent>
           <TextField
@@ -228,11 +214,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleCreate}
-            disabled={!title.trim()}
-          >
+          <Button variant="contained" onClick={handleCreate} disabled={!title.trim()}>
             Create
           </Button>
         </DialogActions>
@@ -243,12 +225,9 @@ export default function QuestDashboard({ currentUserId }: Props) {
         open={snack.open}
         autoHideDuration={3000}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          severity={snack.severity}
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        >
+        <Alert severity={snack.severity} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
           {snack.msg}
         </Alert>
       </Snackbar>
