@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get "/me", to: "sessions#show", as: :me
       resources :quests, only: [ :index, :show, :create ]
       resources :completions, only: [ :create ]
+      resources :categories, only: [:index, :show] 
     end
   end
 
