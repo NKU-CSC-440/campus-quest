@@ -2,7 +2,7 @@ require "test_helper"
 
 class Api::V1::QuestsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @category = Category.create!(name: "Testing", score: 50)
+    @category = Category.create!(name: "Testing #{SecureRandom.hex(4)}", score: 0)
     @user = User.create!(name: "Test User", email: "test@example.com", password: "password123", password_confirmation: "password123", role: :student)
     @quest = Quest.create!(title: "Test Quest", description: "A quest for testing.", category_id: @category.id)
   end
