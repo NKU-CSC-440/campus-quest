@@ -2,9 +2,9 @@ require "test_helper"
 
 class Api::V1::QuestsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(name: "Test User", email: "test@example.com", password: "password123", password_confirmation: "password123", role: :student)
     @category = Category.create!(name: "Testing", score: 50)
-    @quest = Quest.create!(title: "Test Quest", description: "A quest for testing.", category: @category)
+    @user = User.create!(name: "Test User", email: "test@example.com", password: "password123", password_confirmation: "password123", role: :student)
+    @quest = Quest.create!(title: "Test Quest", description: "A quest for testing.", category_id: @category.id)
   end
 
   test "should not allow unauthenticated access to index" do

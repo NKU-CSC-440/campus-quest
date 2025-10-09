@@ -53,7 +53,11 @@ export async function getQuest(id: number): Promise<Quest> {
   return res.json();
 }
 
-export async function createQuest(data: { title: string; description: string; category_id: number }): Promise<Quest> {
+export async function createQuest(data: {
+  title: string;
+  description: string;
+  category_id: number;
+}): Promise<Quest> {
   const res = await fetch(`${API_BASE}/quests`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

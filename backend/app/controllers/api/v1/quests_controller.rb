@@ -10,7 +10,7 @@ class Api::V1::QuestsController < ApplicationController
   # GET /api/v1/quests/:id
   def show
     quest = Quest.find(params[:id])
-    render json: quest, include: [:users, :category]
+    render json: quest, include: [ :users, :category ]
   end
 
   # POST /api/v1/quests
@@ -25,7 +25,7 @@ class Api::V1::QuestsController < ApplicationController
 
   private
 
-  def quest_params
-    params.require(:quest).permit(:title, :description, :category_id)
-  end
+    def quest_params
+      params.require(:quest).permit(:title, :description, :category_id)
+    end
 end
