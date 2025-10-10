@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage';
 import MenuAppBar from './components/AppBar';
 import QuestDashboard from './components/QuestDashboard';
 import Layout from './components/Layout';
+import Signup from './components/SignUp';
 
 function App() {
   // For now, use a hardcoded user ID for QuestList
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<QuestDashboard currentUserId={1} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/sign_up" element={<Signup />} />
         </Routes>
       </Layout>
     </Router>

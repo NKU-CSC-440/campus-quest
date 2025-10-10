@@ -60,6 +60,14 @@ export default function LoginPage() {
         >
           {loading ? <CircularProgress size={24} /> : 'Log In'}
         </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          fullWidth
+          sx={{mt : 2}}
+          onClick={() => navigate('/sign_up')}>
+          {loading ? <CircularProgress size={24} /> : 'Sign Up'}  
+        </Button>  
       </form>
       {error && (
         <Alert severity="error" sx={{ mt: 2 }}>

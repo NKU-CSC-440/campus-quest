@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       post "/login", to: "sessions#create", as: :login
       delete "/logout", to: "sessions#destroy", as: :logout
       get "/me", to: "sessions#show", as: :me
+      get "sign_up", to: "user#new"
+      post "sign_up", to: "user#create"
       resources :quests, only: [ :index, :show, :create ]
       resources :completions, only: [ :create ]
     end
