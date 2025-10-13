@@ -1,6 +1,7 @@
 class Api::V1::OrganizationsController < ApplicationController
-  before_action :set_organization, only: [ :show ]
+  before_action :set_organization, only: [ :show, :pending_applications ]
   before_action :authenticate_user!, except: [ :index, :show ]
+  before_action :authorize_admin!, only: [ :pending_applications ]
 
   def index
     @organizations = Organization.all
@@ -31,6 +32,21 @@ class Api::V1::OrganizationsController < ApplicationController
     end
   end
 
+  def my_organizations
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'active')
+    render json: @memberships.map { |m| m.organization.as_json.merge(role: m.role) }
+  end
+
+  def my_pending_applications
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'pending')
+    render json: @memberships.map { |m| m.organization }
+  end
+
+  def pending_applications
+    @memberships = @organization.organization_memberships.includes(:user).where(status: 'pending')
+    render json: @memberships.map { |m| m.as_json(include: { user: { only: [:id, :name, :email] } }) }
+  end
+
   private
 
     def set_organization
@@ -39,5 +55,11 @@ class Api::V1::OrganizationsController < ApplicationController
 
     def organization_params
       params.require(:organization).permit(:name, :description)
+    end
+
+    def authorize_admin!
+      unless current_user.admin_of?(@organization)
+        render json: { error: "Not authorized" }, status: :forbidden
+      end
     end
 end

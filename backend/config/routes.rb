@@ -8,8 +8,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :organizations, only: [:index, :show, :create] do
-        resources :organization_memberships, only: [:create, :update], shallow: true
+        resources :organization_memberships, only: [:create, :update, :destroy], shallow: true
       end
+      get '/my_organizations', to: 'organizations#my_organizations'
+      get '/my_pending_applications', to: 'organizations#my_pending_applications'
+      get '/organizations/:id/pending_applications', to: 'organizations#pending_applications'
       post "/login", to: "sessions#create", as: :login
       delete "/logout", to: "sessions#destroy", as: :logout
       get "/me", to: "sessions#show", as: :me

@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage';
 import SignUp from './components/SignUp';
 import MenuAppBar from './components/AppBar';
 import QuestDashboard from './components/QuestDashboard';
+import { OrganizationList } from './components/OrganizationList';
 import Layout from './components/Layout';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<QuestDashboard currentUserId={1} />} />
+          <Route path="/organizations" element={<OrganizationList />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign_up" element={<SignUp />} />
