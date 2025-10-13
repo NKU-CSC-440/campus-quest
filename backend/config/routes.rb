@@ -7,6 +7,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :organizations, only: [:index, :show, :create] do
+        resources :organization_memberships, only: [:create, :update], shallow: true
+      end
       post "/login", to: "sessions#create", as: :login
       delete "/logout", to: "sessions#destroy", as: :logout
       get "/me", to: "sessions#show", as: :me

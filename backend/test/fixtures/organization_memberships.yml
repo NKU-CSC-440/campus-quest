@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+math_club_admin:
+  user: teacher
+  organization: math_club
+  role: "admin"
+  status: "active"
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
+
+math_club_member:
+  user: student
+  organization: math_club
+  role: "member"
+  status: "active"
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
+
+chess_club_admin:
+  user: student
+  organization: chess_club
+  role: "admin"
+  status: "active"
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
+
+chess_club_pending:
+  user: teacher
+  organization: chess_club
+  role: "member"
+  status: "pending"
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>

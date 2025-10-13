@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_02_003658) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_010546) do
   create_table "completions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "quest_id", null: false
@@ -19,6 +19,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_003658) do
     t.datetime "updated_at", null: false
     t.index ["quest_id"], name: "index_completions_on_quest_id"
     t.index ["user_id"], name: "index_completions_on_user_id"
+  end
+
+  create_table "organization_memberships", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "organization_id", null: false
+    t.string "role", default: "member", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "role", "status"], name: "idx_on_organization_id_role_status_faba24ad9f"
+    t.index ["organization_id"], name: "index_organization_memberships_on_organization_id"
+    t.index ["user_id", "organization_id"], name: "index_organization_memberships_on_user_id_and_organization_id", unique: true
+    t.index ["user_id"], name: "index_organization_memberships_on_user_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "quests", force: :cascade do |t|
@@ -39,4 +59,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_003658) do
 
   add_foreign_key "completions", "quests"
   add_foreign_key "completions", "users"
+  add_foreign_key "organization_memberships", "organizations"
+  add_foreign_key "organization_memberships", "users"
 end
