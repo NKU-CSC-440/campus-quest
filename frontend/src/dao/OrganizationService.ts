@@ -5,6 +5,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const error = await response.json();
     throw new Error(error.message || 'An error occurred');
   }
+  // Return undefined for 204 No Content responses
+  if (response.status === 204) {
+    return undefined as T;
+  }
   return response.json();
 }
 
@@ -15,6 +19,7 @@ export interface Organization {
   admins?: User[];
   members?: User[];
   role?: string;
+  membership_id?: number;
 }
 
 export interface User {
@@ -50,6 +55,17 @@ export class OrganizationService {
 
   static async getMyPendingApplications(): Promise<Organization[]> {
     const response = await fetch(`${API_BASE}/my_pending_applications`, {
+      credentials: 'include',
+    });
+    if (response.status === 401) {
+      // Return empty array if not authenticated
+      return [];
+    }
+    return handleResponse(response);
+  }
+
+  static async getMyRejectedApplications(): Promise<Organization[]> {
+    const response = await fetch(`${API_BASE}/my_rejected_applications`, {
       credentials: 'include',
     });
     if (response.status === 401) {
@@ -109,7 +125,12 @@ export class OrganizationService {
       method: 'DELETE',
       credentials: 'include',
     });
-    return handleResponse(response);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'An error occurred');
+    }
+    // Don't try to parse the response for DELETE operations
+    return;
   }
 
   static async getMembershipForOrganization(orgId: number): Promise<OrganizationMembership | null> {

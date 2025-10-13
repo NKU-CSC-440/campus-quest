@@ -19,6 +19,7 @@ export function OrganizationList() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [myOrganizations, setMyOrganizations] = useState<Organization[]>([]);
   const [pendingApplications, setPendingApplications] = useState<Organization[]>([]);
+  const [rejectedApplications, setRejectedApplications] = useState<Organization[]>([]);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
   const [newOrgDescription, setNewOrgDescription] = useState('');
@@ -36,14 +37,17 @@ export function OrganizationList() {
       // First load pending applications and my organizations to ensure we have this data
       // before showing any Apply buttons
       if (user) {
-        const [pending, myOrgs] = await Promise.all([
+        const [pending, rejected, myOrgs] = await Promise.all([
           OrganizationService.getMyPendingApplications(),
+          OrganizationService.getMyRejectedApplications(),
           OrganizationService.getMyOrganizations(),
         ]);
         setPendingApplications(pending);
+        setRejectedApplications(rejected);
         setMyOrganizations(myOrgs);
       } else {
         setPendingApplications([]);
+        setRejectedApplications([]);
         setMyOrganizations([]);
       }
 
@@ -124,6 +128,9 @@ export function OrganizationList() {
         >
           {organizations.map((org) => {
             const isApplied = pendingApplications.some((pendingOrg) => pendingOrg.id === org.id);
+            const isRejected = rejectedApplications.some(
+              (rejectedOrg) => rejectedOrg.id === org.id
+            );
             const membership = myOrganizations.find((memberOrg) => memberOrg.id === org.id);
 
             return (
@@ -132,7 +139,7 @@ export function OrganizationList() {
                   <Typography variant="h6">{org.name}</Typography>
                   <Typography color="textSecondary">{org.description}</Typography>
 
-                  {user && !membership && !isApplied && (
+                  {user && !membership && !isApplied && !isRejected && (
                     <Button
                       variant="outlined"
                       color="primary"
@@ -149,6 +156,20 @@ export function OrganizationList() {
                     </Typography>
                   )}
 
+                  {isRejected && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography color="error">Application Rejected</Typography>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleApply(org.id)}
+                        sx={{ mt: 1 }}
+                      >
+                        Apply Again
+                      </Button>
+                    </Box>
+                  )}
+
                   {membership && (
                     <Box sx={{ mt: 2 }}>
                       <Typography color="success.main">
@@ -157,7 +178,7 @@ export function OrganizationList() {
                       <Button
                         variant="outlined"
                         color="error"
-                        onClick={() => handleLeave(membership.id)}
+                        onClick={() => membership.membership_id && handleLeave(membership.membership_id)}
                         sx={{ mt: 1 }}
                       >
                         Leave Organization

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       end
       get '/my_organizations', to: 'organizations#my_organizations'
       get '/my_pending_applications', to: 'organizations#my_pending_applications'
+      get '/my_rejected_applications', to: 'organizations#my_rejected_applications'
       get '/organizations/:id/pending_applications', to: 'organizations#pending_applications'
       get '/organizations/:id/my_membership', to: 'organizations#my_membership'
       post "/login", to: "sessions#create", as: :login

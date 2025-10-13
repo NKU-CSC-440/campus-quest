@@ -6,16 +6,32 @@ class Api::V1::OrganizationMembershipsController < ApplicationController
   before_action :authorize_member!, only: [ :destroy ]
 
   def create
-    # Apply to join an organization
-    @membership = OrganizationMembership.new(
+    # Check for existing rejected or inactive membership
+    @membership = OrganizationMembership.find_by(
       user: current_user,
-      organization: @organization
+      organization: @organization,
+      status: ['rejected', 'inactive']
     )
 
-    if @membership.save
-      render json: @membership, status: :created
+    if @membership
+      # Update existing membership to pending
+      if @membership.update(status: 'pending')
+        render json: @membership, status: :ok
+      else
+        render json: { errors: @membership.errors.full_messages }, status: :unprocessable_content
+      end
     else
-      render json: { errors: @membership.errors.full_messages }, status: :unprocessable_content
+      # Create new membership
+      @membership = OrganizationMembership.new(
+        user: current_user,
+        organization: @organization
+      )
+
+      if @membership.save
+        render json: @membership, status: :created
+      else
+        render json: { errors: @membership.errors.full_messages }, status: :unprocessable_content
+      end
     end
   end
 

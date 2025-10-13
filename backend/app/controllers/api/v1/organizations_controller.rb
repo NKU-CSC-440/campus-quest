@@ -1,5 +1,5 @@
 class Api::V1::OrganizationsController < ApplicationController
-  before_action :set_organization, only: [ :show, :pending_applications ]
+  before_action :set_organization, only: [ :show, :pending_applications, :my_membership ]
   before_action :authenticate_user!, except: [ :index, :show ]
   before_action :authorize_admin!, only: [ :pending_applications ]
 
@@ -34,11 +34,16 @@ class Api::V1::OrganizationsController < ApplicationController
 
   def my_organizations
     @memberships = current_user.organization_memberships.includes(:organization).where(status: 'active')
-    render json: @memberships.map { |m| m.organization.as_json.merge(role: m.role) }
+    render json: @memberships.map { |m| m.organization.as_json.merge(role: m.role, membership_id: m.id) }
   end
 
   def my_pending_applications
     @memberships = current_user.organization_memberships.includes(:organization).where(status: 'pending')
+    render json: @memberships.map { |m| m.organization }
+  end
+
+  def my_rejected_applications
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'rejected')
     render json: @memberships.map { |m| m.organization }
   end
 
