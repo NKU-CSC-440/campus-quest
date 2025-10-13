@@ -11,17 +11,25 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { createUser } from '../dao/UserDAO';
+import { Role } from '../dao/QuestDAO';
 
 const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState<Role>('student');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -37,9 +45,15 @@ const Signup = () => {
     }
 
     try {
-      // TODO: Implement actual signup logic here
-      console.log('Signup email:', email, 'password:', password, 'role:', role);
+      await createUser({
+        name,
+        email,
+        password,
+        password_confirmation: confirmPassword,
+        role,
+      });
       setSuccess(true);
+      // Redirect after a short delay for feedback
       const timer = setTimeout(() => navigate('/login'), 800);
       return () => clearTimeout(timer);
     } catch (err: any) {
@@ -56,6 +70,15 @@ const Signup = () => {
       </Typography>
       <form onSubmit={handleSignup}>
         <TextField
+          label="Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          fullWidth
+          margin="normal"
+          required
+        />
+        <TextField
           label="Email"
           type="email"
           value={email}
@@ -66,28 +89,54 @@ const Signup = () => {
         />
         <TextField
           label="Password"
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
           margin="normal"
           required
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           label="Confirm Password"
-          type="password"
+          type={showConfirmPassword ? 'text' : 'password'}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           fullWidth
           margin="normal"
           required
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle confirm password visibility"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <FormControl fullWidth margin="normal">
           <FormLabel id="role-group-label">Role</FormLabel>
           <RadioGroup
             aria-labelledby="role-group-label"
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => setRole(e.target.value as Role)}
             name="role-group"
           >
             <FormControlLabel value="student" control={<Radio />} label="Student" />
