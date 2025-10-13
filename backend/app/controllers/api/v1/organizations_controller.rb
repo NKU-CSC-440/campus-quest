@@ -47,6 +47,15 @@ class Api::V1::OrganizationsController < ApplicationController
     render json: @memberships.map { |m| m.as_json(include: { user: { only: [:id, :name, :email] } }) }
   end
 
+  def my_membership
+    @membership = @organization.organization_memberships.find_by(user: current_user)
+    if @membership
+      render json: @membership.as_json(include: { user: { only: [:id, :name, :email] } })
+    else
+      render json: { error: "Membership not found" }, status: :not_found
+    end
+  end
+
   private
 
     def set_organization

@@ -111,4 +111,14 @@ export class OrganizationService {
     });
     return handleResponse(response);
   }
+
+  static async getMembershipForOrganization(orgId: number): Promise<OrganizationMembership | null> {
+    const response = await fetch(`${API_BASE}/organizations/${orgId}/my_membership`, {
+      credentials: 'include',
+    });
+    if (response.status === 404) {
+      return null;
+    }
+    return handleResponse(response);
+  }
 }
