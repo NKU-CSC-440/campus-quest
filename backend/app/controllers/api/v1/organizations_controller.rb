@@ -33,29 +33,29 @@ class Api::V1::OrganizationsController < ApplicationController
   end
 
   def my_organizations
-    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'active')
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: "active")
     render json: @memberships.map { |m| m.organization.as_json.merge(role: m.role, membership_id: m.id) }
   end
 
   def my_pending_applications
-    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'pending')
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: "pending")
     render json: @memberships.map { |m| m.organization }
   end
 
   def my_rejected_applications
-    @memberships = current_user.organization_memberships.includes(:organization).where(status: 'rejected')
+    @memberships = current_user.organization_memberships.includes(:organization).where(status: "rejected")
     render json: @memberships.map { |m| m.organization }
   end
 
   def pending_applications
-    @memberships = @organization.organization_memberships.includes(:user).where(status: 'pending')
-    render json: @memberships.map { |m| m.as_json(include: { user: { only: [:id, :name, :email] } }) }
+    @memberships = @organization.organization_memberships.includes(:user).where(status: "pending")
+    render json: @memberships.map { |m| m.as_json(include: { user: { only: [ :id, :name, :email ] } }) }
   end
 
   def my_membership
     @membership = @organization.organization_memberships.find_by(user: current_user)
     if @membership
-      render json: @membership.as_json(include: { user: { only: [:id, :name, :email] } })
+      render json: @membership.as_json(include: { user: { only: [ :id, :name, :email ] } })
     else
       render json: { error: "Membership not found" }, status: :not_found
     end

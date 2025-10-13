@@ -10,12 +10,12 @@ class Api::V1::OrganizationMembershipsController < ApplicationController
     @membership = OrganizationMembership.find_by(
       user: current_user,
       organization: @organization,
-      status: ['rejected', 'inactive']
+      status: [ "rejected", "inactive" ]
     )
 
     if @membership
       # Update existing membership to pending
-      if @membership.update(status: 'pending')
+      if @membership.update(status: "pending")
         render json: @membership, status: :ok
       else
         render json: { errors: @membership.errors.full_messages }, status: :unprocessable_content
@@ -44,7 +44,7 @@ class Api::V1::OrganizationMembershipsController < ApplicationController
   end
 
   def destroy
-    @membership.update(status: 'inactive')
+    @membership.update(status: "inactive")
     head :no_content
   end
 
