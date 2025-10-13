@@ -105,11 +105,6 @@ export function OrganizationList() {
           </Button>
         )}
       </Box>
-      {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <Typography>Loading organizations...</Typography>
@@ -191,9 +186,19 @@ export function OrganizationList() {
           })}
         </Box>
       )}{' '}
-      <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)}>
+      <Dialog 
+        open={createDialogOpen} 
+        onClose={() => {
+          setCreateDialogOpen(false);
+          setError(null);
+        }}>
         <DialogTitle>Create New Organization</DialogTitle>
         <DialogContent>
+          {error && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
           <TextField
             autoFocus
             margin="dense"
