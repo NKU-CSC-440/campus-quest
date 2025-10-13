@@ -173,7 +173,9 @@ export function OrganizationList() {
                       <Button
                         variant="outlined"
                         color="error"
-                        onClick={() => membership.membership_id && handleLeave(membership.membership_id)}
+                        onClick={() =>
+                          membership.membership_id && handleLeave(membership.membership_id)
+                        }
                         sx={{ mt: 1 }}
                       >
                         Leave Organization
@@ -186,12 +188,13 @@ export function OrganizationList() {
           })}
         </Box>
       )}{' '}
-      <Dialog 
-        open={createDialogOpen} 
+      <Dialog
+        open={createDialogOpen}
         onClose={() => {
           setCreateDialogOpen(false);
           setError(null);
-        }}>
+        }}
+      >
         <DialogTitle>Create New Organization</DialogTitle>
         <DialogContent>
           {error && (
