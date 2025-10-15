@@ -13,6 +13,8 @@ import ReportIcon from '@mui/icons-material/BarChart';
 import QuestIcon from '@mui/icons-material/PriorityHigh';
 import ApprovalsIcon from '@mui/icons-material/Checklist';
 import SettingsIcon from '@mui/icons-material/Settings';
+import GroupsIcon from '@mui/icons-material/Groups';
+import { Link } from 'react-router-dom';
 
 const expandedWidth = 240;
 const collapsedWidth = 64;
@@ -44,7 +46,11 @@ export default function SideBar({ collapsed }: Props) {
         <Divider />
         <List>
           <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
+            <ListItemButton
+              component={Link}
+              to="/"
+              sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -59,7 +65,30 @@ export default function SideBar({ collapsed }: Props) {
           </ListItem>
 
           <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
+            <ListItemButton
+              component={Link}
+              to="/organizations"
+              sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: collapsed ? 'auto' : 2,
+                  justifyContent: 'center',
+                }}
+              >
+                <GroupsIcon />
+              </ListItemIcon>
+              {!collapsed && <ListItemText primary="Organizations" />}
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/leaderboards"
+              sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -74,7 +103,11 @@ export default function SideBar({ collapsed }: Props) {
           </ListItem>
 
           <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}>
+            <ListItemButton
+              component={Link}
+              to="/approvals"
+              sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,

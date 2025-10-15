@@ -2,7 +2,7 @@ require "test_helper"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(name: "Test User", email: "test@example.com", password: "password123", password_confirmation: "password123", role: :student)
+    @user = users(:student)
   end
 
   test "should login with valid credentials" do
@@ -70,10 +70,10 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should switch session between users" do
-    user2 = User.create!(name: "Other User", email: "other@example.com", password: "otherpass", password_confirmation: "otherpass", role: :teacher)
+    user2 = users(:teacher)
     post api_v1_login_url, params: { email: @user.email, password: "password123" }
     assert_response :success
-    post api_v1_login_url, params: { email: user2.email, password: "otherpass" }
+    post api_v1_login_url, params: { email: user2.email, password: "password123" }
     assert_response :success
     get api_v1_me_url
     assert_response :success
