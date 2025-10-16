@@ -19,7 +19,7 @@ class Api::V1::QuestsController < ApplicationController
     if quest.save
       render json: quest, status: :created
     else
-      render json: { errors: quest.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: quest.errors.full_messages }, status: :unprocessable_content
     end
   end
 

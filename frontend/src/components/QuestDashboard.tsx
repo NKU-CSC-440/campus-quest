@@ -72,7 +72,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
 
   const handleCreate = async () => {
     try {
-      const q = await createQuest({ title, description, category_id: categoryId! });
+      const q = await createQuest({ title, description, categoryId: categoryId! });
       setQuests((prev) => [...prev, q]);
       setCreateOpen(false);
       setTitle('');
