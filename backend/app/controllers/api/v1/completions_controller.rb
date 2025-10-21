@@ -2,6 +2,13 @@ class Api::V1::CompletionsController < ApplicationController
   before_action :authenticate_user!
   # POST /api/v1/completions
   def create
+
+    
+    if @quest.user == current_user
+      render json: { error: "You cannot complete your own quest." }, status: :forbidden
+      return
+    end
+
     completion = Completion.new(completion_params)
     if completion.save
       render json: completion, status: :created

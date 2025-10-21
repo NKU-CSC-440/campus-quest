@@ -21,6 +21,8 @@ import { getQuests, createQuest, createCompletion, type Quest } from '../dao/Que
 
 import { formatRelativeTimeWithTooltip } from '../utils/date';
 
+import { useAuth } from '../context/AuthContext';
+
 type Props = {
   currentUserId: number;
 };
@@ -40,6 +42,9 @@ export default function QuestDashboard({ currentUserId }: Props) {
     severity: 'success' | 'error';
   }>({ open: false, msg: '', severity: 'success' });
 
+
+  const { user } = useAuth();
+    
   useEffect(() => {
     (async () => {
       try {
