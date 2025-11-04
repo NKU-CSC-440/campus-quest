@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :quests, only: [ :index, :show, :create ]
       resources :completions, only: [ :create ]
       resources :users, only: [ :create ]
+      resources :categories, only: [ :index, :show ]
     end
   end
 

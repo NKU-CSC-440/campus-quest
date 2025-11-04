@@ -31,3 +31,13 @@ User.create!(
 )
 
 puts "Seeded #{User.count} users."
+
+Category.destroy_all
+
+Category.create!([
+  { name: "Exploration", score: 100 },
+  { name: "Social", score: 150 },
+  { name: "Service", score: 200 }
+])
+
+puts "Seeded #{Category.count} categories."

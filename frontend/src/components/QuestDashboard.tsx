@@ -12,12 +12,14 @@ import {
   Snackbar,
   Alert,
   Tooltip,
+  MenuItem,
 } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import type { GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { Helmet } from 'react-helmet-async';
 
-import { getQuests, createQuest, createCompletion, type Quest } from '../dao/QuestDAO';
+import { getQuests, Category, createQuest, createCompletion, type Quest } from '../dao/QuestDAO';
+import { getCategories } from '../dao/CategoryDAO';
 
 import { formatRelativeTimeWithTooltip } from '../utils/date';
 
@@ -33,6 +35,8 @@ export default function QuestDashboard({ currentUserId }: Props) {
   const [createOpen, setCreateOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [snack, setSnack] = useState<{
     open: boolean;
@@ -40,6 +44,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
     severity: 'success' | 'error';
   }>({ open: false, msg: '', severity: 'success' });
 
+  // Load quests
   useEffect(() => {
     (async () => {
       try {
@@ -53,13 +58,26 @@ export default function QuestDashboard({ currentUserId }: Props) {
     })();
   }, []);
 
+  // Load categories
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (e: any) {
+        console.error('Failed to fetch categories:', e);
+      }
+    })();
+  }, []);
+
   const handleCreate = async () => {
     try {
-      const q = await createQuest({ title, description });
+      const q = await createQuest({ title, description, categoryId: categoryId! });
       setQuests((prev) => [...prev, q]);
       setCreateOpen(false);
       setTitle('');
       setDescription('');
+      setCategoryId(null);
       setSnack({ open: true, msg: 'Quest created', severity: 'success' });
     } catch (e: any) {
       setSnack({
@@ -95,18 +113,23 @@ export default function QuestDashboard({ currentUserId }: Props) {
     id: q.id,
     title: q.title,
     description: q.description,
+    oints: q.description,
+    category_name: q.category?.name ?? '—',
+    score: q.category?.score ?? 0,
     created_at: q.created_at,
     updated_at: q.updated_at,
   }));
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 80 },
-    { field: 'title', headerName: 'Title', flex: 1 },
-    { field: 'description', headerName: 'Description', flex: 2 },
+    { field: 'title', headerName: 'Title', minWidth: 80, flex: 1 },
+    { field: 'description', headerName: 'Description', flex : 1},
+    { field: 'category_name', headerName: 'Category', flex: 1},
+    { field: 'score', headerName: 'Points', flex : 1 },
     {
       field: 'created_at',
       headerName: 'Created',
-      width: 180,
+      width: 100,
       renderCell: (params) => {
         const { display, full } = formatRelativeTimeWithTooltip(params.value);
         return (
@@ -119,7 +142,7 @@ export default function QuestDashboard({ currentUserId }: Props) {
     {
       field: 'updated_at',
       headerName: 'Updated',
-      width: 180,
+      width: 100,
       renderCell: (params) => {
         const { display, full } = formatRelativeTimeWithTooltip(params.value);
         return (
@@ -202,6 +225,20 @@ export default function QuestDashboard({ currentUserId }: Props) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+          <TextField
+            select
+            label="Category"
+            value={categoryId ?? ''}
+            onChange={(e) => setCategoryId(Number(e.target.value))}
+            fullWidth
+            margin="normal"
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
             margin="dense"
             label="Description"

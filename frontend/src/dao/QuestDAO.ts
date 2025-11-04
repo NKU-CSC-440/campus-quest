@@ -11,10 +11,20 @@ export interface User {
   updated_at: string;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  score: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Quest {
   id: number;
   title: string;
   description: string;
+  category_id: number;
+  category: Category;
   created_at: string;
   updated_at: string;
 }
@@ -43,7 +53,11 @@ export async function getQuest(id: number): Promise<Quest> {
   return res.json();
 }
 
-export async function createQuest(data: { title: string; description: string }): Promise<Quest> {
+export async function createQuest(data: {
+  title: string;
+  description: string;
+  categoryId: number;
+}): Promise<Quest> {
   const res = await fetch(`${API_BASE}/quests`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
