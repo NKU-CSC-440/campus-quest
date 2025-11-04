@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter } from 'react-router-dom';
 import QuestDashboard from '../QuestDashboard';
 import QuestPendingCompletions from '../QuestPendingCompletions';
 import BulkAssignCompletions from '../BulkAssignCompletions';
@@ -163,9 +163,9 @@ describe('Completion Workflow - Student', () => {
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([mockCompletions[0]]);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -194,9 +194,9 @@ describe('Completion Workflow - Student', () => {
     });
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -221,9 +221,9 @@ describe('Completion Workflow - Student', () => {
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue(mockCompletions);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -242,9 +242,9 @@ describe('Completion Workflow - Student', () => {
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue(mockCompletions);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -271,9 +271,9 @@ describe('Completion Workflow - Teacher Approvals', () => {
     jest.mocked(CompletionService.getPendingCompletions).mockResolvedValue(mockPendingCompletions);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestPendingCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -294,9 +294,9 @@ describe('Completion Workflow - Teacher Approvals', () => {
     jest.mocked(CompletionService.approveCompletion).mockResolvedValue(undefined);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestPendingCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -321,9 +321,9 @@ describe('Completion Workflow - Teacher Approvals', () => {
     jest.mocked(CompletionService.rejectCompletion).mockResolvedValue(undefined);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestPendingCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -347,9 +347,9 @@ describe('Completion Workflow - Teacher Approvals', () => {
     jest.mocked(CompletionService.getPendingCompletions).mockResolvedValue([]);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestPendingCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -372,9 +372,9 @@ describe('Completion Workflow - Bulk Assignment', () => {
     jest.mocked(QuestDAO.getUsers).mockResolvedValue(mockUsers);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <BulkAssignCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -395,9 +395,9 @@ describe('Completion Workflow - Bulk Assignment', () => {
     });
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <BulkAssignCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -409,7 +409,7 @@ describe('Completion Workflow - Bulk Assignment', () => {
     fireEvent.click(checkboxes[0]); // Charlie
     fireEvent.click(checkboxes[1]); // Diana
 
-    const assignButton = screen.getByText(/assign completion/i);
+    const assignButton = screen.getByRole('button', { name: /assign completion to \d+ user/i });
     fireEvent.click(assignButton);
 
     await waitFor(() => {
@@ -431,9 +431,9 @@ describe('Completion Workflow - Bulk Assignment', () => {
     });
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <BulkAssignCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -444,7 +444,7 @@ describe('Completion Workflow - Bulk Assignment', () => {
     fireEvent.click(checkboxes[0]); // Charlie
     fireEvent.click(checkboxes[1]); // Diana (already has completion)
 
-    const assignButton = screen.getByText(/assign completion/i);
+    const assignButton = screen.getByRole('button', { name: /assign completion to \d+ user/i });
     fireEvent.click(assignButton);
 
     await waitFor(() => {
@@ -462,16 +462,16 @@ describe('Completion Workflow - Bulk Assignment', () => {
     jest.mocked(QuestDAO.getUsers).mockResolvedValue(mockUsers);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <BulkAssignCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
       expect(screen.getByText('Charlie Student')).toBeTruthy();
     });
 
-    const assignButton = screen.getByText(/assign completion/i);
+    const assignButton = screen.getByRole('button', { name: /assign completion to \d+ user/i });
     expect(assignButton.hasAttribute('disabled')).toBe(true);
   });
 });
@@ -488,9 +488,9 @@ describe('Completion Workflow - Authorization', () => {
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -515,9 +515,9 @@ describe('Completion Workflow - Authorization', () => {
     });
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestPendingCompletions questId={1} />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -548,9 +548,9 @@ describe('Completion Workflow - Visual Feedback', () => {
     );
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -596,9 +596,9 @@ describe('Completion Workflow - Visual Feedback', () => {
     ]);
 
     render(
-      <BrowserRouter>
+      <TestWrapper>
         <QuestDashboard />
-      </BrowserRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
