@@ -22,12 +22,10 @@ import { getQuests, Category, createQuest, createCompletion, type Quest } from '
 import { getCategories } from '../dao/CategoryDAO';
 
 import { formatRelativeTimeWithTooltip } from '../utils/date';
+import { useAuth } from '../context/AuthContext';
 
-type Props = {
-  currentUserId: number;
-};
-
-export default function QuestDashboard({ currentUserId }: Props) {
+export default function QuestDashboard() {
+  const { user } = useAuth();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,9 +87,17 @@ export default function QuestDashboard({ currentUserId }: Props) {
   };
 
   const handleComplete = async (questId: number) => {
+    if (!user) {
+      setSnack({
+        open: true,
+        msg: 'You must be logged in to complete quests',
+        severity: 'error',
+      });
+      return;
+    }
+
     try {
       await createCompletion({
-        user_id: currentUserId,
         quest_id: questId,
         completed_at: new Date().toISOString(),
       });
@@ -123,9 +129,9 @@ export default function QuestDashboard({ currentUserId }: Props) {
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 80 },
     { field: 'title', headerName: 'Title', minWidth: 80, flex: 1 },
-    { field: 'description', headerName: 'Description', flex : 1},
-    { field: 'category_name', headerName: 'Category', flex: 1},
-    { field: 'score', headerName: 'Points', flex : 1 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'category_name', headerName: 'Category', flex: 1 },
+    { field: 'score', headerName: 'Points', flex: 1 },
     {
       field: 'created_at',
       headerName: 'Created',

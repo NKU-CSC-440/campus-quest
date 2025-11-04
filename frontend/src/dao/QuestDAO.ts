@@ -70,9 +70,8 @@ export async function createQuest(data: {
 
 // --- Completions ---
 export async function createCompletion(data: {
-  user_id: number;
   quest_id: number;
-  completed_at: string;
+  completed_at?: string;
 }): Promise<Completion> {
   const res = await fetch(`${API_BASE}/completions`, {
     method: 'POST',
@@ -80,6 +79,9 @@ export async function createCompletion(data: {
     body: JSON.stringify({ completion: data }),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to create completion');
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'Failed to create completion');
+  }
   return res.json();
 }

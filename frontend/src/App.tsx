@@ -18,7 +18,7 @@ function App() {
       {/* Layout wrapper to keep AppBar outside of Routes */}
       <Layout>
         <Routes>
-          <Route path="/" element={<QuestDashboard currentUserId={1} />} />
+          <Route path="/" element={<QuestDashboard />} />
           <Route path="/organizations" element={<OrganizationList />} />
           <Route path="/approvals" element={<ApprovalsList />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />

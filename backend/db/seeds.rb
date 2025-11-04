@@ -183,10 +183,13 @@ quest_templates = [
 
 quest_templates.each do |quest_data|
   category = Category.find_by(name: quest_data[:category])
+  # Assign a random teacher as the quest creator
+  creator = teachers.sample
   Quest.create!(
     title: quest_data[:title],
     description: quest_data[:description],
-    category: category
+    category: category,
+    creator: creator
   )
 end
 
@@ -204,6 +207,9 @@ students.each do |student|
   completed_quests = quests.sample(num_completions)
   
   completed_quests.each do |quest|
+    # Skip if student is the creator of this quest
+    next if quest.creator_id == student.id
+    
     Completion.create!(
       user: student,
       quest: quest,
@@ -219,6 +225,9 @@ teachers.each do |teacher|
   completed_quests = quests.sample(num_completions)
   
   completed_quests.each do |quest|
+    # Skip if teacher is the creator of this quest
+    next if quest.creator_id == teacher.id
+    
     Completion.create!(
       user: teacher,
       quest: quest,

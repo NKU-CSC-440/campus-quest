@@ -15,7 +15,7 @@ class Api::V1::QuestsController < ApplicationController
 
   # POST /api/v1/quests
   def create
-    quest = Quest.new(quest_params)
+    quest = current_user.created_quests.build(quest_params)
     if quest.save
       render json: quest, status: :created
     else

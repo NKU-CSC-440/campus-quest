@@ -12,6 +12,8 @@ class User < ApplicationRecord
   has_many :completions, dependent: :destroy
   has_many :completed_quests, through: :completions, source: :quest
 
+  has_many :created_quests, class_name: 'Quest', foreign_key: 'creator_id', dependent: :nullify
+
   has_many :organization_memberships, dependent: :destroy
   has_many :organizations, through: :organization_memberships
 
