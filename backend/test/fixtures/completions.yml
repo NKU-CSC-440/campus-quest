@@ -1,11 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  user: one
-  quest: one
-  completed_at: 2025-09-28 20:38:13
+math_completion:
+  user: student
+  quest: math_quest
+  completed_at: <%= 1.day.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 1.day.ago %>
 
-two:
-  user: two
-  quest: two
-  completed_at: 2025-09-28 20:38:13
+science_completion:
+  user: teacher
+  quest: science_quest
+  completed_at: <%= 2.days.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 2.days.ago %>

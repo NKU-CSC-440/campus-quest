@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-math_quest:
-  title: "Math Quest"
-  description: "Complete these math problems"
+math_club:
+  name: "Math Club"
+  description: "A club for math enthusiasts"
   created_at: <%= 5.days.ago %>
   updated_at: <%= 5.days.ago %>
 
-science_quest:
-  title: "Science Quest"
-  description: "Learn about the scientific method"
+chess_club:
+  name: "Chess Club"
+  description: "Learn and play chess with fellow students"
   created_at: <%= 5.days.ago %>
   updated_at: <%= 5.days.ago %>
