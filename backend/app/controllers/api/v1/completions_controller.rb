@@ -95,6 +95,20 @@ class Api::V1::CompletionsController < ApplicationController
     render json: completions, include: :user
   end
 
+  # GET /api/v1/completions/pending_for_creator
+  def pending_for_creator
+    # Get all quests created by the current user
+    quest_ids = current_user.created_quests.pluck(:id)
+    
+    # Get all pending completions for those quests
+    completions = Completion.pending
+                            .where(quest_id: quest_ids)
+                            .includes(:user, :quest)
+                            .order('created_at DESC')
+    
+    render json: completions, include: [:user, :quest]
+  end
+
   private
 
     def set_completion

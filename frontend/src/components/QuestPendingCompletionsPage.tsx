@@ -3,7 +3,7 @@ import QuestPendingCompletions from './QuestPendingCompletions';
 
 const QuestPendingCompletionsPage = () => {
   const { questId } = useParams<{ questId: string }>();
-  
+
   if (!questId) {
     return <div>Quest ID is required</div>;
   }

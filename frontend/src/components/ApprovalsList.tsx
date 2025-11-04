@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, Typography, Tabs, Tab, Alert } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Tabs,
+  Tab,
+  Alert,
+  Snackbar,
+} from '@mui/material';
 import {
   Organization,
   OrganizationMembership,
   OrganizationService,
 } from '../dao/OrganizationService';
+import { CompletionService, Completion } from '../dao/CompletionService';
 import { useAuth } from '../context/AuthContext';
 
 interface TabPanelProps {
@@ -44,8 +55,18 @@ export function ApprovalsList() {
   const [pendingApplications, setPendingApplications] = useState<
     Record<number, OrganizationMembership[]>
   >({});
+  const [pendingQuestCompletions, setPendingQuestCompletions] = useState<Completion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     if (user) {
@@ -74,6 +95,12 @@ export function ApprovalsList() {
         })
       );
       setPendingApplications(applications);
+
+      // Load pending quest completions for quests I created (only for teachers)
+      if (user?.role === 'teacher') {
+        const questCompletions = await CompletionService.getPendingCompletionsForCreator();
+        setPendingQuestCompletions(questCompletions);
+      }
     } catch (err) {
       setError('Failed to load approvals');
       console.error(err);
@@ -120,6 +147,48 @@ export function ApprovalsList() {
     }
   };
 
+  const handleApproveQuestCompletion = async (completionId: number) => {
+    try {
+      await CompletionService.approveCompletion(completionId);
+      setSnackbar({
+        open: true,
+        message: 'Quest completion approved',
+        severity: 'success',
+      });
+      loadData(); // Refresh data
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to approve quest completion',
+        severity: 'error',
+      });
+      console.error(err);
+    }
+  };
+
+  const handleRejectQuestCompletion = async (completionId: number) => {
+    try {
+      await CompletionService.rejectCompletion(completionId);
+      setSnackbar({
+        open: true,
+        message: 'Quest completion rejected',
+        severity: 'success',
+      });
+      loadData(); // Refresh data
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to reject quest completion',
+        severity: 'error',
+      });
+      console.error(err);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   if (!user) {
     return (
       <Box sx={{ p: 3 }}>
@@ -150,10 +219,16 @@ export function ApprovalsList() {
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="approval tabs">
               <Tab label="My Applications" {...a11yProps(0)} />
               <Tab
-                label={`Pending Approvals (${Object.values(pendingApplications).flat().length})`}
+                label={`Organization Requests (${Object.values(pendingApplications).flat().length})`}
                 {...a11yProps(1)}
                 disabled={adminOrganizations.length === 0}
               />
+              {user?.role === 'teacher' && (
+                <Tab
+                  label={`Quest Completions (${pendingQuestCompletions.length})`}
+                  {...a11yProps(2)}
+                />
+              )}
             </Tabs>
           </Box>
 
@@ -245,8 +320,75 @@ export function ApprovalsList() {
               </Box>
             )}
           </TabPanel>
+
+          {user?.role === 'teacher' && (
+            <TabPanel value={tabValue} index={2}>
+              {pendingQuestCompletions.length === 0 ? (
+                <Typography>No pending quest completions</Typography>
+              ) : (
+                <Box sx={{ display: 'grid', gap: 2 }}>
+                  {pendingQuestCompletions.map((completion) => (
+                    <Box
+                      key={completion.id}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        p: 2,
+                        border: 1,
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="subtitle1">
+                          {completion.user?.name || 'Unknown User'}
+                        </Typography>
+                        <Typography color="textSecondary" variant="body2">
+                          {completion.user?.email || ''}
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 1, fontWeight: 'medium' }}>
+                          Quest: {completion.quest?.title || 'Unknown Quest'}
+                        </Typography>
+                        <Typography color="textSecondary" variant="caption">
+                          {completion.quest?.description || ''}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleApproveQuestCompletion(completion.id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleRejectQuestCompletion(completion.id)}
+                        >
+                          Reject
+                        </Button>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </TabPanel>
+          )}
         </Box>
       )}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

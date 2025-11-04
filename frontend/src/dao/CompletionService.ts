@@ -12,6 +12,11 @@ export interface Completion {
     email: string;
     role: string;
   };
+  quest?: {
+    id: number;
+    title: string;
+    description: string;
+  };
 }
 
 export interface BatchCreateResponse {
@@ -74,6 +79,17 @@ export class CompletionService {
     });
     if (!response.ok) {
       throw new Error(`Failed to get pending completions: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  static async getPendingCompletionsForCreator(): Promise<Completion[]> {
+    const response = await fetch(`${API_BASE_URL}/completions/pending_for_creator`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to get pending completions for creator: ${response.statusText}`);
     }
     return response.json();
   }

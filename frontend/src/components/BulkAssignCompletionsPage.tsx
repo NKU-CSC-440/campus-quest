@@ -3,7 +3,7 @@ import BulkAssignCompletions from './BulkAssignCompletions';
 
 const BulkAssignCompletionsPage = () => {
   const { questId } = useParams<{ questId: string }>();
-  
+
   if (!questId) {
     return <div>Quest ID is required</div>;
   }
