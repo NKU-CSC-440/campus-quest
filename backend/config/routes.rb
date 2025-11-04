@@ -22,6 +22,10 @@ Rails.application.routes.draw do
       resources :completions, only: [ :create ]
       resources :users, only: [ :create ]
       resources :categories, only: [ :index, :show ]
+      
+      # Leaderboard routes
+      get '/leaderboard', to: 'leaderboard#show', as: :leaderboard
+      get '/organizations/:organization_id/leaderboard', to: 'leaderboard#show', as: :organization_leaderboard
     end
   end
 

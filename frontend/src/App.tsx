@@ -8,6 +8,7 @@ import MenuAppBar from './components/AppBar';
 import QuestDashboard from './components/QuestDashboard';
 import { OrganizationList } from './components/OrganizationList';
 import { ApprovalsList } from './components/ApprovalsList';
+import { LeaderboardPage } from './components/LeaderboardPage';
 import Layout from './components/Layout';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<QuestDashboard currentUserId={1} />} />
           <Route path="/organizations" element={<OrganizationList />} />
           <Route path="/approvals" element={<ApprovalsList />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign_up" element={<SignUp />} />

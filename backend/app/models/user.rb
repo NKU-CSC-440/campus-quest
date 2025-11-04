@@ -26,4 +26,37 @@ class User < ApplicationRecord
   def pending_application?(organization)
     organization_memberships.exists?(organization: organization, status: 'pending')
   end
+
+  # Leaderboard class methods to avoid N+1 queries
+  def self.global_leaderboard
+    User.select('users.id, users.name, users.email, COUNT(completions.id) as score')
+        .left_joins(:completions)
+        .group('users.id')
+        .order('score DESC, users.name ASC')
+        .map do |user|
+          {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            score: user.score
+          }
+        end
+  end
+
+  def self.leaderboard_for_organization(organization_id)
+    User.select('users.id, users.name, users.email, COUNT(completions.id) as score')
+        .joins(:organization_memberships)
+        .left_joins(:completions)
+        .where(organization_memberships: { organization_id: organization_id, status: 'active' })
+        .group('users.id')
+        .order('score DESC, users.name ASC')
+        .map do |user|
+          {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            score: user.score
+          }
+        end
+  end
 end
