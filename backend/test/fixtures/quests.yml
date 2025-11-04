@@ -3,11 +3,13 @@
 math_quest:
   title: "Math Quest"
   description: "Complete these math problems"
+  category: one
   created_at: <%= 5.days.ago %>
   updated_at: <%= 5.days.ago %>
 
 science_quest:
   title: "Science Quest"
   description: "Learn about the scientific method"
+  category: one
   created_at: <%= 5.days.ago %>
   updated_at: <%= 5.days.ago %>
