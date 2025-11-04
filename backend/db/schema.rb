@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_04_012756) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_04_014746) do
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.integer "score"
@@ -24,7 +24,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_04_012756) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "pending", null: false
     t.index ["quest_id"], name: "index_completions_on_quest_id"
+    t.index ["status"], name: "index_completions_on_status"
     t.index ["user_id"], name: "index_completions_on_user_id"
   end
 

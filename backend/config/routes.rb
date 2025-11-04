@@ -18,8 +18,11 @@ Rails.application.routes.draw do
       post "/login", to: "sessions#create", as: :login
       delete "/logout", to: "sessions#destroy", as: :logout
       get "/me", to: "sessions#show", as: :me
-      resources :quests, only: [ :index, :show, :create ]
-      resources :completions, only: [ :create ]
+      resources :quests, only: [ :index, :show, :create ] do
+        post 'completions/batch', to: 'completions#batch_create', on: :member
+        get 'completions/pending', to: 'completions#pending', on: :member
+      end
+      resources :completions, only: [ :create, :update ]
       resources :users, only: [ :create ]
       resources :categories, only: [ :index, :show ]
       

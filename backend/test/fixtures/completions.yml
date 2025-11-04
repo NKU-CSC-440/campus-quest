@@ -3,6 +3,7 @@
 math_completion:
   user: student
   quest: math_quest
+  status: approved
   completed_at: <%= 1.day.ago %>
   created_at: <%= 5.days.ago %>
   updated_at: <%= 1.day.ago %>
@@ -10,6 +11,7 @@ math_completion:
 science_completion:
   user: teacher
   quest: science_quest
+  status: approved
   completed_at: <%= 2.days.ago %>
   created_at: <%= 5.days.ago %>
   updated_at: <%= 2.days.ago %>

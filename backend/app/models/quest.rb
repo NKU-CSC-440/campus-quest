@@ -6,4 +6,8 @@ class Quest < ApplicationRecord
 
   has_many :completions, dependent: :destroy
   has_many :users, through: :completions
+  
+  def pending_completions
+    completions.pending.includes(:user)
+  end
 end

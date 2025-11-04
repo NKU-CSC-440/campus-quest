@@ -33,6 +33,7 @@ class User < ApplicationRecord
   def self.global_leaderboard
     User.select('users.id, users.name, users.email, COALESCE(SUM(categories.score), 0) as score')
         .left_joins(completions: { quest: :category })
+        .where('completions.id IS NULL OR completions.status = ?', 'approved')
         .group('users.id')
         .order('score DESC, users.name ASC')
         .map do |user|
@@ -50,6 +51,7 @@ class User < ApplicationRecord
         .joins(:organization_memberships)
         .left_joins(completions: { quest: :category })
         .where(organization_memberships: { organization_id: organization_id, status: 'active' })
+        .where('completions.id IS NULL OR completions.status = ?', 'approved')
         .group('users.id')
         .order('score DESC, users.name ASC')
         .map do |user|

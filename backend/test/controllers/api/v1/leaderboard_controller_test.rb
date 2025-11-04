@@ -137,8 +137,8 @@ class Api::V1::LeaderboardControllerTest < ActionDispatch::IntegrationTest
     bob = User.create!(name: "Bob", email: "bob@example.com", role: :student, password: "password123")
     
     quest = quests(:math_quest)
-    Completion.create!(user: alice, quest: quest)
-    Completion.create!(user: bob, quest: quest)
+    Completion.create!(user: alice, quest: quest, status: 'approved', completed_at: Time.current)
+    Completion.create!(user: bob, quest: quest, status: 'approved', completed_at: Time.current)
 
     get api_v1_leaderboard_url
     assert_response :success

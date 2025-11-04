@@ -213,6 +213,7 @@ students.each do |student|
     Completion.create!(
       user: student,
       quest: quest,
+      status: 'approved',
       completed_at: Faker::Time.between(from: 90.days.ago, to: Time.now)
     )
     completion_count += 1
@@ -231,6 +232,7 @@ teachers.each do |teacher|
     Completion.create!(
       user: teacher,
       quest: quest,
+      status: 'approved',
       completed_at: Faker::Time.between(from: 90.days.ago, to: Time.now)
     )
     completion_count += 1

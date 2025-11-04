@@ -44,8 +44,8 @@ class UserTest < ActiveSupport::TestCase
     bob = User.create!(name: "Bob", email: "bob@test.com", role: :student, password: "password123")
     
     quest = quests(:math_quest)
-    Completion.create!(user: alice, quest: quest)
-    Completion.create!(user: bob, quest: quest)
+    Completion.create!(user: alice, quest: quest, status: 'approved', completed_at: Time.current)
+    Completion.create!(user: bob, quest: quest, status: 'approved', completed_at: Time.current)
 
     leaderboard = User.global_leaderboard
     
