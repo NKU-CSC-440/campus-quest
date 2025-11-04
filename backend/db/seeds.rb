@@ -199,7 +199,8 @@ puts "✅ Created #{Quest.count} quests"
 puts "\n✅ Creating quest completions..."
 
 quests = Quest.all.to_a
-completion_count = 0
+approved_count = 0
+pending_count = 0
 
 # Give each student random completions (0-15 quests)
 students.each do |student|
@@ -210,13 +211,24 @@ students.each do |student|
     # Skip if student is the creator of this quest
     next if quest.creator_id == student.id
     
-    Completion.create!(
-      user: student,
-      quest: quest,
-      status: 'approved',
-      completed_at: Faker::Time.between(from: 90.days.ago, to: Time.now)
-    )
-    completion_count += 1
+    # 80% approved, 20% pending (simulating requests awaiting approval)
+    if rand < 0.8
+      Completion.create!(
+        user: student,
+        quest: quest,
+        status: 'approved',
+        completed_at: Faker::Time.between(from: 90.days.ago, to: Time.now)
+      )
+      approved_count += 1
+    else
+      Completion.create!(
+        user: student,
+        quest: quest,
+        status: 'pending',
+        completed_at: nil
+      )
+      pending_count += 1
+    end
   end
 end
 
@@ -235,11 +247,11 @@ teachers.each do |teacher|
       status: 'approved',
       completed_at: Faker::Time.between(from: 90.days.ago, to: Time.now)
     )
-    completion_count += 1
+    approved_count += 1
   end
 end
 
-puts "✅ Created #{completion_count} quest completions"
+puts "✅ Created #{approved_count + pending_count} quest completions (#{approved_count} approved, #{pending_count} pending)"
 
 # Summary
 puts "\n" + "=" * 50
@@ -251,7 +263,7 @@ puts "  • #{Category.count} categories"
 puts "  • #{Organization.count} organizations"
 puts "  • #{OrganizationMembership.count} memberships"
 puts "  • #{Quest.count} quests"
-puts "  • #{Completion.count} completions"
+puts "  • #{Completion.count} completions (#{Completion.approved.count} approved, #{Completion.pending.count} pending)"
 puts ""
 puts "🔑 Login credentials:"
 puts "  Teacher: alice@nku.edu / password"

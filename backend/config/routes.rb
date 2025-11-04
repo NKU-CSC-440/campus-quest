@@ -22,8 +22,8 @@ Rails.application.routes.draw do
         post 'completions/batch', to: 'completions#batch_create', on: :member
         get 'completions/pending', to: 'completions#pending', on: :member
       end
-      resources :completions, only: [ :create, :update ]
-      resources :users, only: [ :create ]
+      resources :completions, only: [ :index, :create, :update ]
+      resources :users, only: [ :index, :create ]
       resources :categories, only: [ :index, :show ]
       
       # Leaderboard routes

@@ -3,6 +3,12 @@ class Api::V1::CompletionsController < ApplicationController
   before_action :set_completion, only: [:update]
   before_action :authorize_quest_creator!, only: [:update, :batch_create, :pending]
   
+  # GET /api/v1/completions
+  def index
+    completions = current_user.completions.includes(:quest)
+    render json: completions
+  end
+
   # POST /api/v1/completions
   def create
     quest = Quest.find(completion_params[:quest_id])
