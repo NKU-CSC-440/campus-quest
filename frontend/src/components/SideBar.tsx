@@ -86,7 +86,7 @@ export default function SideBar({ collapsed }: Props) {
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               component={Link}
-              to="/leaderboards"
+              to="/leaderboard"
               sx={{ justifyContent: collapsed ? 'center' : 'initial', px: 2.5 }}
             >
               <ListItemIcon

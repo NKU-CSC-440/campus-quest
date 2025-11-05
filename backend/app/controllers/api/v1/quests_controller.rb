@@ -15,7 +15,7 @@ class Api::V1::QuestsController < ApplicationController
 
   # POST /api/v1/quests
   def create
-    quest = Quest.new(quest_params)
+    quest = current_user.created_quests.build(quest_params)
     if quest.save
       render json: quest, status: :created
     else
@@ -26,6 +26,9 @@ class Api::V1::QuestsController < ApplicationController
   private
 
     def quest_params
-      params.require(:quest).permit(:title, :description, :category_id)
+      permitted = params.require(:quest).permit(:title, :description, :category_id, :categoryId)
+      # Handle both category_id and categoryId (frontend sends camelCase)
+      permitted[:category_id] = permitted.delete(:categoryId) if permitted[:categoryId].present?
+      permitted
     end
 end

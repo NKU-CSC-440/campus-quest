@@ -44,6 +44,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Faker for generating test data
+  gem "faker"
 end
 
 gem "rack-cors", "~> 3.0"

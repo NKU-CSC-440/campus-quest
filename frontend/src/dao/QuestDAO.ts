@@ -33,7 +33,8 @@ export interface Completion {
   id: number;
   user_id: number;
   quest_id: number;
-  completed_at: string;
+  status: 'pending' | 'approved' | 'rejected';
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -69,17 +70,33 @@ export async function createQuest(data: {
 }
 
 // --- Completions ---
-export async function createCompletion(data: {
-  user_id: number;
-  quest_id: number;
-  completed_at: string;
-}): Promise<Completion> {
+export async function createCompletion(questId: number): Promise<Completion> {
   const res = await fetch(`${API_BASE}/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ completion: data }),
+    body: JSON.stringify({ completion: { quest_id: questId } }),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to create completion');
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'Failed to create completion');
+  }
+  return res.json();
+}
+
+export async function getUserCompletions(): Promise<Completion[]> {
+  const res = await fetch(`${API_BASE}/completions`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to fetch completions');
+  return res.json();
+}
+
+// --- Users ---
+export async function getUsers(): Promise<User[]> {
+  const res = await fetch(`${API_BASE}/users`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to fetch users');
   return res.json();
 }

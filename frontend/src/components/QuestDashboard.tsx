@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -13,24 +14,38 @@ import {
   Alert,
   Tooltip,
   MenuItem,
+  Chip,
+  CircularProgress,
+  IconButton,
 } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import type { GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { Helmet } from 'react-helmet-async';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
-import { getQuests, Category, createQuest, createCompletion, type Quest } from '../dao/QuestDAO';
+import {
+  getQuests,
+  Category,
+  createQuest,
+  createCompletion,
+  getUserCompletions,
+  type Quest,
+  type Completion,
+} from '../dao/QuestDAO';
 import { getCategories } from '../dao/CategoryDAO';
 
 import { formatRelativeTimeWithTooltip } from '../utils/date';
+import { useAuth } from '../context/AuthContext';
 
-type Props = {
-  currentUserId: number;
-};
-
-export default function QuestDashboard({ currentUserId }: Props) {
+export default function QuestDashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [completions, setCompletions] = useState<Completion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [completingQuestId, setCompletingQuestId] = useState<number | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -44,12 +59,16 @@ export default function QuestDashboard({ currentUserId }: Props) {
     severity: 'success' | 'error';
   }>({ open: false, msg: '', severity: 'success' });
 
-  // Load quests
+  // Load quests and completions
   useEffect(() => {
     (async () => {
       try {
-        const data = await getQuests();
-        setQuests(data);
+        const [questsData, completionsData] = await Promise.all([
+          getQuests(),
+          getUserCompletions(),
+        ]);
+        setQuests(questsData);
+        setCompletions(completionsData);
       } catch (e: any) {
         setError(e.message || 'Failed to load quests');
       } finally {
@@ -89,23 +108,49 @@ export default function QuestDashboard({ currentUserId }: Props) {
   };
 
   const handleComplete = async (questId: number) => {
-    try {
-      await createCompletion({
-        user_id: currentUserId,
-        quest_id: questId,
-        completed_at: new Date().toISOString(),
-      });
+    if (!user) {
       setSnack({
         open: true,
-        msg: 'Quest marked as completed',
+        msg: 'You must be logged in to complete quests',
+        severity: 'error',
+      });
+      return;
+    }
+
+    try {
+      setCompletingQuestId(questId);
+      const completion = await createCompletion(questId);
+      setCompletions((prev) => [...prev, completion]);
+      setSnack({
+        open: true,
+        msg: 'Quest completion requested - pending approval',
         severity: 'success',
       });
     } catch (e: any) {
       setSnack({
         open: true,
-        msg: e.message || 'Failed to mark completion',
+        msg: e.message || 'Failed to request completion',
         severity: 'error',
       });
+    } finally {
+      setCompletingQuestId(null);
+    }
+  };
+
+  const getCompletionStatus = (questId: number): Completion | undefined => {
+    return completions.find((c) => c.quest_id === questId);
+  };
+
+  const getStatusChip = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Chip label="Approved" color="success" size="small" />;
+      case 'pending':
+        return <Chip label="Pending" color="warning" size="small" />;
+      case 'rejected':
+        return <Chip label="Rejected" color="error" size="small" />;
+      default:
+        return null;
     }
   };
 
@@ -118,14 +163,15 @@ export default function QuestDashboard({ currentUserId }: Props) {
     score: q.category?.score ?? 0,
     created_at: q.created_at,
     updated_at: q.updated_at,
+    completion: getCompletionStatus(q.id),
   }));
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 80 },
     { field: 'title', headerName: 'Title', minWidth: 80, flex: 1 },
-    { field: 'description', headerName: 'Description', flex : 1},
-    { field: 'category_name', headerName: 'Category', flex: 1},
-    { field: 'score', headerName: 'Points', flex : 1 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'category_name', headerName: 'Category', flex: 1 },
+    { field: 'score', headerName: 'Points', flex: 1 },
     {
       field: 'created_at',
       headerName: 'Created',
@@ -155,12 +201,54 @@ export default function QuestDashboard({ currentUserId }: Props) {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 200,
-      renderCell: (params) => (
-        <Button size="small" variant="outlined" onClick={() => handleComplete(params.row.id)}>
-          Complete
-        </Button>
-      ),
+      width: 300,
+      renderCell: (params) => {
+        const completion = params.row.completion;
+        const isCompleting = completingQuestId === params.row.id;
+        const isTeacher = user?.role === 'teacher';
+
+        return (
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {/* Student actions */}
+            {completion ? (
+              getStatusChip(completion.status)
+            ) : (
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => handleComplete(params.row.id)}
+                disabled={isCompleting}
+              >
+                {isCompleting ? <CircularProgress size={20} /> : 'Request Completion'}
+              </Button>
+            )}
+
+            {/* Teacher actions */}
+            {isTeacher && (
+              <>
+                <Tooltip title="View Pending Approvals">
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={() => navigate(`/quests/${params.row.id}/pending`)}
+                  >
+                    <PendingActionsIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Bulk Assign Completions">
+                  <IconButton
+                    size="small"
+                    color="secondary"
+                    onClick={() => navigate(`/quests/${params.row.id}/bulk-assign`)}
+                  >
+                    <GroupAddIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+          </Box>
+        );
+      },
     },
   ];
 
