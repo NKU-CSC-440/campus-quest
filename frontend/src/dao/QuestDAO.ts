@@ -64,14 +64,14 @@ export async function getQuests(
     page: page.toString(),
     per_page: perPage.toString(),
   });
-  
+
   if (sortField) {
     params.append('sort_field', sortField);
   }
   if (sortOrder) {
     params.append('sort_order', sortOrder);
   }
-  
+
   const res = await fetch(`${API_BASE}/quests?${params}`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch quests');
   return res.json();

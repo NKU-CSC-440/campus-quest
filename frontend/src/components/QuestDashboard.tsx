@@ -46,14 +46,14 @@ export default function QuestDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [completingQuestId, setCompletingQuestId] = useState<number | null>(null);
-  
+
   // Pagination state
   const [paginationModel, setPaginationModel] = useState({
     page: 0, // MUI DataGrid uses 0-based pages
     pageSize: 10,
   });
   const [rowCount, setRowCount] = useState(0);
-  
+
   // Sorting state
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'created_at', sort: 'desc' },
@@ -78,8 +78,9 @@ export default function QuestDashboard() {
         setLoading(true);
         const page = paginationModel.page + 1; // Convert from 0-based to 1-based
         const sortField = sortModel[0]?.field;
-        const sortOrder = sortModel[0]?.sort === 'asc' ? 'asc' : sortModel[0]?.sort === 'desc' ? 'desc' : undefined;
-        
+        const sortOrder =
+          sortModel[0]?.sort === 'asc' ? 'asc' : sortModel[0]?.sort === 'desc' ? 'desc' : undefined;
+
         const [questsResponse, completionsData] = await Promise.all([
           getQuests(page, paginationModel.pageSize, sortField, sortOrder),
           getUserCompletions(),
@@ -115,11 +116,12 @@ export default function QuestDashboard() {
       setDescription('');
       setCategoryId(null);
       setSnack({ open: true, msg: 'Quest created', severity: 'success' });
-      
+
       // Refetch quests to show the new one
       const page = paginationModel.page + 1;
       const sortField = sortModel[0]?.field;
-      const sortOrder = sortModel[0]?.sort === 'asc' ? 'asc' : sortModel[0]?.sort === 'desc' ? 'desc' : undefined;
+      const sortOrder =
+        sortModel[0]?.sort === 'asc' ? 'asc' : sortModel[0]?.sort === 'desc' ? 'desc' : undefined;
       const questsResponse = await getQuests(page, paginationModel.pageSize, sortField, sortOrder);
       setQuests(questsResponse.quests);
       setRowCount(questsResponse.pagination.total_count);
@@ -293,14 +295,7 @@ export default function QuestDashboard() {
           {error}
         </Alert>
       ) : (
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          }}
-        >
+        <Box>
           <Box
             sx={{
               mb: 2,
@@ -316,7 +311,7 @@ export default function QuestDashboard() {
           </Box>
 
           {/* DataGrid */}
-          <Paper sx={{ flexGrow: 1, width: '100%' }}>
+          <Paper sx={{ width: '100%' }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -331,6 +326,7 @@ export default function QuestDashboard() {
               onSortModelChange={setSortModel}
               slots={{ toolbar: GridToolbar }}
               disableRowSelectionOnClick
+              autoHeight
               sx={{ border: 0 }}
             />
           </Paper>
