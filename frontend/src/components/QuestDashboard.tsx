@@ -230,6 +230,7 @@ export default function QuestDashboard() {
       field: 'actions',
       headerName: 'Actions',
       width: 300,
+      display: 'flex',
       renderCell: (params) => {
         const completion = params.row.completion;
         const isCompleting = completingQuestId === params.row.id;
@@ -238,7 +239,7 @@ export default function QuestDashboard() {
         const canRequestCompletion = !completion && !isCreator;
 
         return (
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', height: '100%' }}>
             {/* Student actions */}
             {completion ? (
               getStatusChip(completion.status)
