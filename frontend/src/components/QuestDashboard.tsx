@@ -144,7 +144,7 @@ export default function QuestDashboard() {
   const getStatusChip = (status: string) => {
     switch (status) {
       case 'approved':
-        return <Chip label="Approved" color="success" size="small" />;
+        return <Chip label="Completed" color="success" size="small" />;
       case 'pending':
         return <Chip label="Pending" color="warning" size="small" />;
       case 'rejected':

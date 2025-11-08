@@ -32,7 +32,7 @@ const BulkAssignCompletions: React.FC<BulkAssignCompletionsProps> = ({ questId }
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
-    severity: 'success' | 'error';
+    severity: 'success' | 'error' | 'warning';
   }>({ open: false, msg: '', severity: 'success' });
 
   useEffect(() => {
@@ -62,20 +62,33 @@ const BulkAssignCompletions: React.FC<BulkAssignCompletionsProps> = ({ questId }
       setError(null);
       setSuccess(null);
       const result = await CompletionService.batchCreateCompletions(questId, selectedUsers);
-      if (result.errors.length > 0) {
-        setSnack({
-          open: true,
-          msg: result.errors.join(', '),
-          severity: 'error',
-        });
-      }
+      
+      // Build message based on results
+      let message = '';
+      let severity: 'success' | 'error' = 'success';
+      
       if (result.created_count > 0) {
+        message = `Successfully assigned completions to ${result.created_count} user(s)`;
+        setSelectedUsers([]);
+      }
+      
+      if (result.errors.length > 0) {
+        const errorMsg = result.errors.join(', ');
+        if (message) {
+          message = `${message}. Errors: ${errorMsg}`;
+          severity = 'warning' as any; // Mixed success/error
+        } else {
+          message = errorMsg;
+          severity = 'error';
+        }
+      }
+      
+      if (message) {
         setSnack({
           open: true,
-          msg: `Successfully assigned completions to ${result.created_count} user(s)`,
-          severity: 'success',
+          msg: message,
+          severity,
         });
-        setSelectedUsers([]);
       }
     } catch (e: any) {
       setSnack({
