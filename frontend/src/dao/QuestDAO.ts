@@ -38,6 +38,7 @@ export interface Completion {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+  quest?: Quest;
 }
 
 // --- Quests ---
@@ -90,7 +91,8 @@ export async function getUserCompletions(): Promise<Completion[]> {
     credentials: 'include',
   });
   if (!res.ok) throw new Error('Failed to fetch completions');
-  return res.json();
+  const completions = await res.json();
+  return completions;
 }
 
 // --- Users ---
