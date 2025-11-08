@@ -25,6 +25,7 @@ export interface Quest {
   description: string;
   category_id: number;
   category: Category;
+  creator_id?: number;
   created_at: string;
   updated_at: string;
 }

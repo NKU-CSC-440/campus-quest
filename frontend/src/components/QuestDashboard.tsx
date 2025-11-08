@@ -163,6 +163,7 @@ export default function QuestDashboard() {
     score: q.category?.score ?? 0,
     created_at: q.created_at,
     updated_at: q.updated_at,
+    creator_id: q.creator_id,
     completion: getCompletionStatus(q.id),
   }));
 
@@ -206,13 +207,15 @@ export default function QuestDashboard() {
         const completion = params.row.completion;
         const isCompleting = completingQuestId === params.row.id;
         const isTeacher = user?.role === 'teacher';
+        const isCreator = params.row.creator_id === user?.id;
+        const canRequestCompletion = !completion && !isCreator;
 
         return (
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {/* Student actions */}
             {completion ? (
               getStatusChip(completion.status)
-            ) : (
+            ) : canRequestCompletion ? (
               <Button
                 size="small"
                 variant="outlined"
@@ -221,7 +224,7 @@ export default function QuestDashboard() {
               >
                 {isCompleting ? <CircularProgress size={20} /> : 'Request Completion'}
               </Button>
-            )}
+            ) : null}
 
             {/* Teacher actions */}
             {isTeacher && (

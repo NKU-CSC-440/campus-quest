@@ -36,6 +36,7 @@ const mockQuests = [
     title: 'Campus Tour Quest',
     description: 'Complete a full tour of campus',
     category_id: 1,
+    creator_id: 2,
     category: {
       id: 1,
       name: 'Exploration',
@@ -51,6 +52,7 @@ const mockQuests = [
     title: 'Study Group Challenge',
     description: 'Form a study group',
     category_id: 2,
+    creator_id: 2,
     category: {
       id: 2,
       name: 'Social',
@@ -524,6 +526,61 @@ describe('Completion Workflow - Authorization', () => {
       expect(screen.getByText(/not authorized/i)).toBeTruthy();
     });
   });
+
+  it('should not show request completion button for own quest', async () => {
+    const { useAuth } = require('../../context/AuthContext');
+    useAuth.mockReturnValue({
+      user: { id: 2, name: 'Quest Creator', email: 'creator@nku.edu', role: 'teacher' },
+      isAuthenticated: true,
+    });
+
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
+
+    render(
+      <TestWrapper>
+        <QuestDashboard />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Campus Tour Quest')).toBeTruthy();
+    });
+
+    // Should not show "Request Completion" button for quests created by user (id: 2)
+    expect(screen.queryByText('Request Completion')).not.toBeTruthy();
+  });
+
+  it('should not allow student to request completion for their own quest', async () => {
+    const { useAuth } = require('../../context/AuthContext');
+    useAuth.mockReturnValue({
+      user: { id: 1, name: 'Student Creator', email: 'student@nku.edu', role: 'student' },
+      isAuthenticated: true,
+    });
+
+    const questsWithStudentCreator = [
+      {
+        ...mockQuests[0],
+        creator_id: 1, // Student is the creator
+      },
+    ];
+
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(questsWithStudentCreator);
+    jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
+
+    render(
+      <TestWrapper>
+        <QuestDashboard />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Campus Tour Quest')).toBeTruthy();
+    });
+
+    // Should not show "Request Completion" button for quest created by the student
+    expect(screen.queryByText('Request Completion')).not.toBeTruthy();
+  });
 });
 
 describe('Completion Workflow - Visual Feedback', () => {
@@ -592,7 +649,7 @@ describe('Completion Workflow - Visual Feedback', () => {
         updated_at: '2025-01-01',
       },
     ];
-    
+
     jest.mocked(QuestDAO.getQuests).mockResolvedValue(questsWithThree);
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([
       { ...mockCompletions[0], status: 'approved' },

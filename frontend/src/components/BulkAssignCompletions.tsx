@@ -62,16 +62,16 @@ const BulkAssignCompletions: React.FC<BulkAssignCompletionsProps> = ({ questId }
       setError(null);
       setSuccess(null);
       const result = await CompletionService.batchCreateCompletions(questId, selectedUsers);
-      
+
       // Build message based on results
       let message = '';
       let severity: 'success' | 'error' = 'success';
-      
+
       if (result.created_count > 0) {
         message = `Successfully assigned completions to ${result.created_count} user(s)`;
         setSelectedUsers([]);
       }
-      
+
       if (result.errors.length > 0) {
         const errorMsg = result.errors.join(', ');
         if (message) {
@@ -82,7 +82,7 @@ const BulkAssignCompletions: React.FC<BulkAssignCompletionsProps> = ({ questId }
           severity = 'error';
         }
       }
-      
+
       if (message) {
         setSnack({
           open: true,
