@@ -6,14 +6,14 @@ class Organization < ApplicationRecord
   validates :description, presence: true
 
   def admins
-    users.where(organization_memberships: { role: 'admin', status: 'active' })
+    users.where(organization_memberships: { role: "admin", status: "active" })
   end
 
   def members
-    users.where(organization_memberships: { role: 'member', status: 'active' })
+    users.where(organization_memberships: { role: "member", status: "active" })
   end
 
   def pending_applications
-    organization_memberships.where(status: 'pending')
+    organization_memberships.where(status: "pending")
   end
 end

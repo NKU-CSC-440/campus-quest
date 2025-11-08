@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const toggleCollapse = () => setCollapsed((prev) => !prev);
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       {/* AppBar with hamburger toggle */}
       <MenuAppBar toggleCollapse={toggleCollapse} />
 
