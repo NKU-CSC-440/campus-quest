@@ -41,9 +41,38 @@ export interface Completion {
   quest?: Quest;
 }
 
+export interface PaginationInfo {
+  current_page: number;
+  per_page: number;
+  total_count: number;
+  total_pages: number;
+}
+
+export interface QuestsResponse {
+  quests: Quest[];
+  pagination: PaginationInfo;
+}
+
 // --- Quests ---
-export async function getQuests(): Promise<Quest[]> {
-  const res = await fetch(`${API_BASE}/quests`, { credentials: 'include' });
+export async function getQuests(
+  page: number = 1,
+  perPage: number = 10,
+  sortField?: string,
+  sortOrder?: 'asc' | 'desc'
+): Promise<QuestsResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: perPage.toString(),
+  });
+  
+  if (sortField) {
+    params.append('sort_field', sortField);
+  }
+  if (sortOrder) {
+    params.append('sort_order', sortOrder);
+  }
+  
+  const res = await fetch(`${API_BASE}/quests?${params}`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch quests');
   return res.json();
 }

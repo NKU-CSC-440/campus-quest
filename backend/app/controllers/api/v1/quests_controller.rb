@@ -3,8 +3,34 @@ class Api::V1::QuestsController < ApplicationController
 
   # GET /api/v1/quests
   def index
-    quests = Quest.includes(:category).all
-    render json: quests, include: :category
+    page = params[:page]&.to_i || 1
+    per_page = params[:per_page]&.to_i || 10
+    per_page = [ per_page, 100 ].min # Cap at 100 items per page
+
+    # Handle sorting
+    sort_field = params[:sort_field] || "created_at"
+    sort_order = params[:sort_order]&.downcase == "asc" ? :asc : :desc
+
+    # Whitelist sortable fields to prevent SQL injection
+    allowed_sort_fields = %w[id title created_at updated_at]
+    sort_field = "created_at" unless allowed_sort_fields.include?(sort_field)
+
+    quests = Quest.includes(:category)
+                  .order(sort_field => sort_order)
+                  .limit(per_page)
+                  .offset((page - 1) * per_page)
+
+    total_count = Quest.count
+
+    render json: {
+      quests: quests.as_json(include: :category),
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total_pages: (total_count.to_f / per_page).ceil
+      }
+    }
   end
 
   # GET /api/v1/quests/:id
