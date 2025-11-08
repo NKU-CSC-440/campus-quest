@@ -226,8 +226,8 @@ export default function QuestDashboard() {
               </Button>
             ) : null}
 
-            {/* Teacher actions */}
-            {isTeacher && (
+            {/* Teacher actions - only show for quests created by this user */}
+            {isTeacher && isCreator && (
               <>
                 <Tooltip title="View Pending Approvals">
                   <IconButton

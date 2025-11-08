@@ -581,6 +581,48 @@ describe('Completion Workflow - Authorization', () => {
     // Should not show "Request Completion" button for quest created by the student
     expect(screen.queryByText('Request Completion')).not.toBeTruthy();
   });
+
+  it('should only show teacher actions for quests created by that teacher', async () => {
+    const { useAuth } = require('../../context/AuthContext');
+    useAuth.mockReturnValue({
+      user: { id: 2, name: 'Test Teacher', email: 'teacher@nku.edu', role: 'teacher' },
+      isAuthenticated: true,
+    });
+
+    const mixedQuests = [
+      {
+        ...mockQuests[0],
+        creator_id: 2, // Created by this teacher
+      },
+      {
+        ...mockQuests[1],
+        creator_id: 3, // Created by another teacher
+      },
+    ];
+
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mixedQuests);
+    jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
+
+    render(
+      <TestWrapper>
+        <QuestDashboard />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Campus Tour Quest')).toBeTruthy();
+      expect(screen.getByText('Study Group Challenge')).toBeTruthy();
+    });
+
+    // Should show teacher action buttons (Pending Approvals icon buttons)
+    // Since we're looking for icon buttons, let's check for the presence of specific tooltips
+    const pendingButtons = screen.queryAllByRole('button', { name: /view pending approvals/i });
+    const bulkAssignButtons = screen.queryAllByRole('button', { name: /bulk assign completions/i });
+
+    // Should have exactly 1 of each button (only for quest created by teacher id: 2)
+    expect(pendingButtons.length).toBe(1);
+    expect(bulkAssignButtons.length).toBe(1);
+  });
 });
 
 describe('Completion Workflow - Visual Feedback', () => {
