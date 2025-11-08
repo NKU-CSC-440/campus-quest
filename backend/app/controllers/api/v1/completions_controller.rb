@@ -5,8 +5,8 @@ class Api::V1::CompletionsController < ApplicationController
 
   # GET /api/v1/completions
   def index
-    completions = current_user.completions.includes(:quest)
-    render json: completions
+    completions = current_user.completions.includes(quest: :category)
+    render json: completions, include: { quest: { include: :category } }
   end
 
   # POST /api/v1/completions
