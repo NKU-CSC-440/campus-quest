@@ -27,13 +27,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "global_leaderboard orders by score descending" do
     quest = quests(:math_quest)
-    
+
     # Give student multiple completions
     3.times { Completion.create!(user: @student, quest: quest) }
-    
+
     leaderboard = User.global_leaderboard
     scores = leaderboard.map { |entry| entry[:score] }
-    
+
     # Scores should be in descending order
     assert_equal scores, scores.sort.reverse
   end
@@ -42,19 +42,19 @@ class UserTest < ActiveSupport::TestCase
     # Create two users with same completion count
     alice = User.create!(name: "Alice", email: "alice@test.com", role: :student, password: "password123")
     bob = User.create!(name: "Bob", email: "bob@test.com", role: :student, password: "password123")
-    
+
     quest = quests(:math_quest)
-    Completion.create!(user: alice, quest: quest, status: 'approved', completed_at: Time.current)
-    Completion.create!(user: bob, quest: quest, status: 'approved', completed_at: Time.current)
+    Completion.create!(user: alice, quest: quest, status: "approved", completed_at: Time.current)
+    Completion.create!(user: bob, quest: quest, status: "approved", completed_at: Time.current)
 
     leaderboard = User.global_leaderboard
-    
+
     alice_entry = leaderboard.find { |e| e[:id] == alice.id }
     bob_entry = leaderboard.find { |e| e[:id] == bob.id }
-    
+
     # Both should have same score
     assert_equal alice_entry[:score], bob_entry[:score]
-    
+
     # Alice should appear before Bob
     alice_index = leaderboard.index(alice_entry)
     bob_index = leaderboard.index(bob_entry)
@@ -64,10 +64,10 @@ class UserTest < ActiveSupport::TestCase
   test "global_leaderboard includes users with zero completions" do
     # Ensure another_user has no completions
     @another_user.completions.destroy_all
-    
+
     leaderboard = User.global_leaderboard
     another_entry = leaderboard.find { |e| e[:id] == @another_user.id }
-    
+
     assert_not_nil another_entry
     assert_equal 0, another_entry[:score]
   end
@@ -79,7 +79,7 @@ class UserTest < ActiveSupport::TestCase
     # Math club has student and teacher as active members
     assert_includes user_ids, @student.id
     assert_includes user_ids, @teacher.id
-    
+
     # another_user is not a member
     assert_not_includes user_ids, @another_user.id
   end
@@ -91,22 +91,22 @@ class UserTest < ActiveSupport::TestCase
 
     # Should include student (active admin)
     assert_includes user_ids, @student.id
-    
+
     # Should not include teacher (pending)
     assert_not_includes user_ids, @teacher.id
   end
 
   test "leaderboard_for_organization orders by score descending" do
     quest = quests(:math_quest)
-    
+
     # Give student more completions than teacher
     3.times { Completion.create!(user: @student, quest: quest) }
-    
+
     leaderboard = User.leaderboard_for_organization(@math_club.id)
-    
+
     # Student should be first
     assert_equal @student.id, leaderboard.first[:id]
-    
+
     # Scores should be descending
     scores = leaderboard.map { |entry| entry[:score] }
     assert_equal scores, scores.sort.reverse
@@ -129,16 +129,16 @@ class UserTest < ActiveSupport::TestCase
 
     leaderboard = User.leaderboard_for_organization(@math_club.id)
     zero_entry = leaderboard.find { |e| e[:id] == zero_user.id }
-    
+
     assert_not_nil zero_entry
     assert_equal 0, zero_entry[:score]
   end
 
   test "leaderboard_for_organization returns empty array for organization with no members" do
     empty_org = Organization.create!(name: "Empty Org", description: "No members")
-    
+
     leaderboard = User.leaderboard_for_organization(empty_org.id)
-    
+
     assert_equal [], leaderboard
   end
 end

@@ -4,15 +4,15 @@ class Completion < ApplicationRecord
 
   validates :status, presence: true, inclusion: { in: %w[pending approved rejected] }
 
-  scope :pending, -> { where(status: 'pending') }
-  scope :approved, -> { where(status: 'approved') }
-  scope :rejected, -> { where(status: 'rejected') }
+  scope :pending, -> { where(status: "pending") }
+  scope :approved, -> { where(status: "approved") }
+  scope :rejected, -> { where(status: "rejected") }
 
   def approve!
-    update!(status: 'approved', completed_at: Time.current)
+    update!(status: "approved", completed_at: Time.current)
   end
 
   def reject!
-    update!(status: 'rejected')
+    update!(status: "rejected")
   end
 end

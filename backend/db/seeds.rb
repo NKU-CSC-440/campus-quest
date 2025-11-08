@@ -125,11 +125,11 @@ organizations.each do |org|
   # Assign random students as members (30-70% of students)
   member_count = rand((students.count * 0.3).to_i..(students.count * 0.7).to_i)
   members = students.sample(member_count)
-  
+
   members.each do |student|
     # 80% active, 15% pending, 5% rejected
     status = rand < 0.8 ? 'active' : (rand < 0.75 ? 'pending' : 'rejected')
-    
+
     OrganizationMembership.create!(
       user: student,
       organization: org,
@@ -150,30 +150,30 @@ quest_templates = [
   { title: "Find the Library Secret Garden", description: "Discover the hidden garden behind Steely Library", category: "Exploration" },
   { title: "Campus Scavenger Hunt", description: "Find all 10 hidden landmarks across campus", category: "Exploration" },
   { title: "Explore Every Building", description: "Visit and check in at all academic buildings", category: "Exploration" },
-  
+
   # Social
   { title: "Join a Student Organization", description: "Become a member of any student organization", category: "Social" },
   { title: "Attend a Campus Event", description: "Participate in any campus-wide event", category: "Social" },
   { title: "Make 5 New Friends", description: "Connect with 5 students you've never met before", category: "Social" },
   { title: "Study Group Challenge", description: "Form or join a study group and meet 3 times", category: "Social" },
-  
+
   # Service
   { title: "Volunteer at Food Pantry", description: "Help out at the campus food pantry for 4 hours", category: "Service" },
   { title: "Campus Cleanup Day", description: "Participate in campus beautification", category: "Service" },
   { title: "Tutor a Peer", description: "Help another student in a subject you excel at", category: "Service" },
   { title: "Blood Drive Hero", description: "Donate blood at the campus blood drive", category: "Service" },
-  
+
   # Academic
   { title: "Attend Office Hours", description: "Visit office hours for 3 different professors", category: "Academic" },
   { title: "Research Paper Publication", description: "Submit a paper to an academic journal", category: "Academic" },
   { title: "Perfect Attendance", description: "Don't miss a single class for an entire semester", category: "Academic" },
   { title: "Library Research Workshop", description: "Complete a research skills workshop", category: "Academic" },
-  
+
   # Athletic
   { title: "Join Intramural Sports", description: "Play in any intramural league", category: "Athletic" },
   { title: "5K Fun Run", description: "Complete the annual campus 5K", category: "Athletic" },
   { title: "Gym Regular", description: "Visit the campus gym 20 times in a month", category: "Athletic" },
-  
+
   # Creative
   { title: "Art Gallery Submission", description: "Submit artwork to the student gallery", category: "Creative" },
   { title: "Open Mic Performance", description: "Perform at an open mic night", category: "Creative" },
@@ -206,11 +206,11 @@ pending_count = 0
 students.each do |student|
   num_completions = rand(0..15)
   completed_quests = quests.sample(num_completions)
-  
+
   completed_quests.each do |quest|
     # Skip if student is the creator of this quest
     next if quest.creator_id == student.id
-    
+
     # 80% approved, 20% pending (simulating requests awaiting approval)
     if rand < 0.8
       Completion.create!(
@@ -236,11 +236,11 @@ end
 teachers.each do |teacher|
   num_completions = rand(0..5)
   completed_quests = quests.sample(num_completions)
-  
+
   completed_quests.each do |quest|
     # Skip if teacher is the creator of this quest
     next if quest.creator_id == teacher.id
-    
+
     Completion.create!(
       user: teacher,
       quest: quest,
@@ -270,4 +270,3 @@ puts "  Teacher: alice@nku.edu / password"
 puts "  Student: bob@nku.edu / password"
 puts "  (All users have password: 'password')"
 puts "=" * 50
-
