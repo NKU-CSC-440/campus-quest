@@ -63,7 +63,7 @@ export class CompletionService {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_ids: userIds }),
+      body: JSON.stringify({ completion: { user_ids: userIds } }),
       credentials: 'include',
     });
     if (!response.ok) {
