@@ -123,6 +123,17 @@ const mockPendingCompletions = [
   },
 ];
 
+// Helper to wrap quests array in pagination response
+const createQuestsResponse = (quests: any[]) => ({
+  quests,
+  pagination: {
+    current_page: 1,
+    per_page: 10,
+    total_count: quests.length,
+    total_pages: 1,
+  },
+});
+
 const mockUsers = [
   {
     id: 5,
@@ -161,7 +172,7 @@ describe('Completion Workflow - Student', () => {
   });
 
   it('should show "Request Completion" button for incomplete quests', async () => {
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([mockCompletions[0]]);
 
     render(
@@ -183,7 +194,7 @@ describe('Completion Workflow - Student', () => {
   });
 
   it('should create pending completion when student requests', async () => {
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
     jest.mocked(QuestDAO.createCompletion).mockResolvedValue({
       id: 5,
@@ -219,7 +230,7 @@ describe('Completion Workflow - Student', () => {
   });
 
   it('should show status badges for user completions', async () => {
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue(mockCompletions);
 
     render(
@@ -240,7 +251,7 @@ describe('Completion Workflow - Student', () => {
   });
 
   it('should disable request button when completion is pending or approved', async () => {
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue(mockCompletions);
 
     render(
@@ -486,7 +497,7 @@ describe('Completion Workflow - Authorization', () => {
       isAuthenticated: true,
     });
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
@@ -534,7 +545,7 @@ describe('Completion Workflow - Authorization', () => {
       isAuthenticated: true,
     });
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
@@ -565,7 +576,7 @@ describe('Completion Workflow - Authorization', () => {
       },
     ];
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(questsWithStudentCreator);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(questsWithStudentCreator));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
@@ -600,7 +611,7 @@ describe('Completion Workflow - Authorization', () => {
       },
     ];
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mixedQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mixedQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
@@ -635,7 +646,7 @@ describe('Completion Workflow - Visual Feedback', () => {
   });
 
   it('should show loading state while creating completion', async () => {
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(mockQuests);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(mockQuests));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     let resolveCompletion: any;
@@ -692,7 +703,7 @@ describe('Completion Workflow - Visual Feedback', () => {
       },
     ];
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(questsWithThree);
+    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(questsWithThree));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([
       { ...mockCompletions[0], status: 'approved' },
       { ...mockCompletions[1], status: 'pending' },
