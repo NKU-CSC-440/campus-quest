@@ -1,10 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserCompletions, type Completion } from '../dao/QuestDAO';
-import { Box, Typography, Paper, Alert, Chip, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Alert,
+  Chip,
+  CircularProgress,
+  Grid,
+  Tooltip,
+} from '@mui/material';
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
+
 import { Helmet } from 'react-helmet-async';
 import { formatRelativeTimeWithTooltip } from '../utils/date';
+
+import FirstQuestIcon from '../assets/badges/first-quest.png';
+import TenQuestsIcon from '../assets/badges/ten-quests.png';
+import TwentyFiveQuestsIcon from '../assets/badges/twentyfive-quests.png';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -25,9 +39,7 @@ export default function ProfilePage() {
       }
     };
 
-    if (user) {
-      loadCompletions();
-    }
+    if (user) loadCompletions();
   }, [user]);
 
   const getStatusChip = (status: string) => {
@@ -111,6 +123,33 @@ export default function ProfilePage() {
   const approvedCount = completions.filter((c) => c.status === 'approved').length;
   const pendingCount = completions.filter((c) => c.status === 'pending').length;
 
+  // --- Badges ---
+  const badges = [];
+
+  if (approvedCount >= 1) {
+    badges.push({
+      name: 'First Quest',
+      description: 'Completed your first quest!',
+      icon: FirstQuestIcon,
+    });
+  }
+
+  if (approvedCount >= 10) {
+    badges.push({
+      name: 'Quest Grinder',
+      description: 'Completed 10 quests!',
+      icon: TenQuestsIcon,
+    });
+  }
+
+  if (approvedCount >= 25) {
+    badges.push({
+      name: 'Campus Legend',
+      description: 'Completed 25 quests!',
+      icon: TwentyFiveQuestsIcon,
+    });
+  }
+
   return (
     <>
       <Helmet>
@@ -128,25 +167,73 @@ export default function ProfilePage() {
             <Typography variant="h6" gutterBottom>
               User Information
             </Typography>
-            <Typography variant="body1">
-              <strong>Name:</strong> {user.name}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Email:</strong> {user.email}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Role:</strong> {user.role}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
+            <Typography><strong>Name:</strong> {user.name}</Typography>
+            <Typography><strong>Email:</strong> {user.email}</Typography>
+            <Typography><strong>Role:</strong> {user.role}</Typography>
+            <Typography sx={{ mt: 2 }}>
               <strong>Total Points:</strong> {totalPoints}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Quests Completed:</strong> {approvedCount}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Quests Pending:</strong> {pendingCount}
             </Typography>
           </Paper>
+        )}
+
+        {/* Badges Section (only if user has badges) */}
+        {badges.length > 0 && (
+          <>
+            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
+              Badges
+            </Typography>
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Grid
+                container
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                {badges.map((badge, i) => (
+                  <Grid item key={i}>
+                    <Tooltip title={badge.description} arrow>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          p: 2,
+                          borderRadius: 2,
+                          backgroundColor: 'background.default',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          textAlign: 'center',
+                          width: 150,
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={badge.icon}
+                          alt={badge.name}
+                          sx={{
+                            width: 64,
+                            height: 64,
+                            mb: 1,
+                            objectFit: 'contain',
+                          }}
+                        />
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {badge.name}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </>
         )}
 
         {/* Completions Table */}
