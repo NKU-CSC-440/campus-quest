@@ -63,11 +63,13 @@ export default function QuestDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>({
-    open: false,
-    msg: '',
-    severity: 'success',
-  });
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
 
   const [infoOpen, setInfoOpen] = useState(false);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);

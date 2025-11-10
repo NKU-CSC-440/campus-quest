@@ -167,9 +167,15 @@ export default function ProfilePage() {
             <Typography variant="h6" gutterBottom>
               User Information
             </Typography>
-            <Typography><strong>Name:</strong> {user.name}</Typography>
-            <Typography><strong>Email:</strong> {user.email}</Typography>
-            <Typography><strong>Role:</strong> {user.role}</Typography>
+            <Typography>
+              <strong>Name:</strong> {user.name}
+            </Typography>
+            <Typography>
+              <strong>Email:</strong> {user.email}
+            </Typography>
+            <Typography>
+              <strong>Role:</strong> {user.role}
+            </Typography>
             <Typography sx={{ mt: 2 }}>
               <strong>Total Points:</strong> {totalPoints}
             </Typography>
@@ -189,12 +195,7 @@ export default function ProfilePage() {
               Badges
             </Typography>
             <Paper sx={{ p: 3, mb: 3 }}>
-              <Grid
-                container
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
+              <Grid container spacing={3} justifyContent="center" alignItems="center">
                 {badges.map((badge, i) => (
                   <Grid item key={i}>
                     <Tooltip title={badge.description} arrow>
