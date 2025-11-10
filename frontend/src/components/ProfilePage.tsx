@@ -16,15 +16,20 @@ import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import { Helmet } from 'react-helmet-async';
 import { formatRelativeTimeWithTooltip } from '../utils/date';
 
+import { OrganizationService, Organization } from '../dao/OrganizationService';
+
 import FirstQuestIcon from '../assets/badges/first-quest.png';
 import TenQuestsIcon from '../assets/badges/ten-quests.png';
 import TwentyFiveQuestsIcon from '../assets/badges/twentyfive-quests.png';
+import JoinedOrgIcon from '../assets/badges/joined-first-org.png';
+
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [myOrganizations, setMyOrganizations] = useState<Organization[]>([]);
 
   useEffect(() => {
     const loadCompletions = async () => {
@@ -40,6 +45,18 @@ export default function ProfilePage() {
     };
 
     if (user) loadCompletions();
+  }, [user]);
+
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      try {
+        const orgs = await OrganizationService.getMyOrganizations();
+        setMyOrganizations(orgs);
+      } catch (err) {
+        console.error('Failed to load organizations', err);
+      }
+    };
+    if (user) loadOrganizations();
   }, [user]);
 
   const getStatusChip = (status: string) => {
@@ -147,6 +164,15 @@ export default function ProfilePage() {
       name: 'Campus Legend',
       description: 'Completed 25 quests!',
       icon: TwentyFiveQuestsIcon,
+    });
+  }
+
+  // --- Joined First Organization ---
+  if (myOrganizations.length >= 1) {
+    badges.push({
+      name: 'Team Player',
+      description: 'Joined your first organization!',
+      icon: JoinedOrgIcon,
     });
   }
 
