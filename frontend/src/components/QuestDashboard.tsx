@@ -48,38 +48,31 @@ export default function QuestDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [completingQuestId, setCompletingQuestId] = useState<number | null>(null);
 
-  // Pagination
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [rowCount, setRowCount] = useState(0);
-
-  // Sorting
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'created_at', sort: 'desc' },
   ]);
 
-  // Create dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Filters
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>(''); // completed/uncompleted
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  // Snackbar
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>({
     open: false,
     msg: '',
     severity: 'success',
   });
 
-  // Quest info modal
   const [infoOpen, setInfoOpen] = useState(false);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
 
-  // Load quests
+  // Load quests and completions
   useEffect(() => {
     (async () => {
       try {
@@ -197,17 +190,23 @@ export default function QuestDashboard() {
     setSelectedQuest(null);
   };
 
+  // Figure out which statuses actually exist
+  const availableStatuses = (() => {
+    const statusSet = new Set<string>();
+    quests.forEach((q) => {
+      const completion = getCompletionStatus(q.id);
+      if (!completion) statusSet.add('uncompleted');
+      else statusSet.add(completion.status);
+    });
+    return Array.from(statusSet);
+  })();
+
   // Apply filters
   const filteredQuests = quests.filter((q) => {
     const matchesCategory = selectedCategory ? q.category?.name === selectedCategory : true;
     const completion = getCompletionStatus(q.id);
-    const isCompleted = completion?.status === 'approved';
-    const matchesStatus =
-      selectedStatus === 'completed'
-        ? isCompleted
-        : selectedStatus === 'uncompleted'
-        ? !isCompleted
-        : true;
+    const status = completion ? completion.status : 'uncompleted';
+    const matchesStatus = selectedStatus ? status === selectedStatus : true;
     return matchesCategory && matchesStatus;
   });
 
@@ -230,7 +229,13 @@ export default function QuestDashboard() {
       renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <Tooltip title="View Details">
-            <IconButton size="small" onClick={() => handleOpenInfo(params.row.quest)}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenInfo(params.row.quest);
+              }}
+            >
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -318,7 +323,6 @@ export default function QuestDashboard() {
           >
             <Typography variant="h4">Quests</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {/* Combined Filter Box */}
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   select
@@ -359,8 +363,18 @@ export default function QuestDashboard() {
                   }}
                 >
                   <MenuItem value="">All</MenuItem>
-                  <MenuItem value="completed">Completed</MenuItem>
-                  <MenuItem value="uncompleted">Uncompleted</MenuItem>
+                  {availableStatuses.includes('approved') && (
+                    <MenuItem value="approved">Completed</MenuItem>
+                  )}
+                  {availableStatuses.includes('pending') && (
+                    <MenuItem value="pending">Pending</MenuItem>
+                  )}
+                  {availableStatuses.includes('rejected') && (
+                    <MenuItem value="rejected">Rejected</MenuItem>
+                  )}
+                  {availableStatuses.includes('uncompleted') && (
+                    <MenuItem value="uncompleted">Uncompleted</MenuItem>
+                  )}
                 </TextField>
               </Box>
 
@@ -392,47 +406,22 @@ export default function QuestDashboard() {
         </Box>
       )}
 
-      {/* Create dialog */}
-      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Create a quest</DialogTitle>
+      {/* Info Dialog */}
+      <Dialog
+        open={infoOpen}
+        onClose={handleCloseInfo}
+        fullWidth
+        maxWidth="md"
+        container={document.body} // <-- ensures it renders on top
+      >
+        <DialogTitle>{selectedQuest?.title}</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Title"
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <TextField
-            select
-            label="Category"
-            value={categoryId ?? ''}
-            onChange={(e) => setCategoryId(Number(e.target.value))}
-            fullWidth
-            margin="normal"
-          >
-            {categories.map((cat) => (
-              <MenuItem key={cat.id} value={cat.id}>
-                {cat.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            margin="dense"
-            label="Description"
-            fullWidth
-            multiline
-            minRows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {selectedQuest?.description}
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreate} disabled={!title.trim()}>
-            Create
-          </Button>
+          <Button onClick={handleCloseInfo}>Close</Button>
         </DialogActions>
       </Dialog>
 
