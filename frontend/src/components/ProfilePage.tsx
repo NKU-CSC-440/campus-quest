@@ -10,9 +10,15 @@ import {
   CircularProgress,
   Grid,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
 } from '@mui/material';
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
-
+import InfoIcon from '@mui/icons-material/Info';
 import { Helmet } from 'react-helmet-async';
 import { formatRelativeTimeWithTooltip } from '../utils/date';
 
@@ -23,13 +29,25 @@ import TenQuestsIcon from '../assets/badges/ten-quests.png';
 import TwentyFiveQuestsIcon from '../assets/badges/twentyfive-quests.png';
 import JoinedOrgIcon from '../assets/badges/joined-first-org.png';
 
-
 export default function ProfilePage() {
   const { user } = useAuth();
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [myOrganizations, setMyOrganizations] = useState<Organization[]>([]);
+
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [selectedQuest, setSelectedQuest] = useState<any>(null);
+
+  const handleOpenInfo = (quest: any) => {
+    setSelectedQuest(quest);
+    setInfoOpen(true);
+  };
+
+  const handleCloseInfo = () => {
+    setInfoOpen(false);
+    setSelectedQuest(null);
+  };
 
   useEffect(() => {
     const loadCompletions = async () => {
@@ -73,33 +91,30 @@ export default function ProfilePage() {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 80 },
     {
-      field: 'quest_title',
-      headerName: 'Quest',
-      flex: 1,
-      minWidth: 200,
-      valueGetter: (_value, row) => row.quest?.title || 'Unknown Quest',
+      field: 'info',
+      headerName: '',
+      width: 60,
+      sortable: false,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenInfo(params.row.quest);
+              }}
+            >
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
-    {
-      field: 'quest_description',
-      headerName: 'Description',
-      flex: 1,
-      minWidth: 200,
-      valueGetter: (_value, row) => row.quest?.description || '',
-    },
-    {
-      field: 'category',
-      headerName: 'Category',
-      width: 150,
-      valueGetter: (_value, row) => row.quest?.category?.name || '—',
-    },
-    {
-      field: 'points',
-      headerName: 'Points',
-      width: 100,
-      valueGetter: (_value, row) => row.quest?.category?.score || 0,
-    },
+    { field: 'quest_title', headerName: 'Quest', flex: 1, minWidth: 200 },
+    { field: 'category', headerName: 'Category', width: 150 },
+    { field: 'points', headerName: 'Points', width: 100 },
     {
       field: 'status',
       headerName: 'Status',
@@ -286,6 +301,25 @@ export default function ProfilePage() {
             />
           </Paper>
         )}
+
+        {/* Quest Info Dialog */}
+        <Dialog
+          open={infoOpen}
+          onClose={handleCloseInfo}
+          fullWidth
+          maxWidth="md"
+          container={document.body}
+        >
+          <DialogTitle>{selectedQuest?.title}</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {selectedQuest?.description}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseInfo}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   );
