@@ -190,17 +190,6 @@ export default function QuestDashboard() {
     setSelectedQuest(null);
   };
 
-  // Figure out which statuses actually exist
-  const availableStatuses = (() => {
-    const statusSet = new Set<string>();
-    quests.forEach((q) => {
-      const completion = getCompletionStatus(q.id);
-      if (!completion) statusSet.add('uncompleted');
-      else statusSet.add(completion.status);
-    });
-    return Array.from(statusSet);
-  })();
-
   // Apply filters
   const filteredQuests = quests.filter((q) => {
     const matchesCategory = selectedCategory ? q.category?.name === selectedCategory : true;
@@ -257,9 +246,18 @@ export default function QuestDashboard() {
         const canRequestCompletion = !completion && !isCreator;
 
         return (
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
             {completion ? (
-              getStatusChip(completion.status)
+              <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                {getStatusChip(completion.status)}
+              </Box>
             ) : canRequestCompletion ? (
               <Button
                 size="small"
@@ -363,18 +361,10 @@ export default function QuestDashboard() {
                   }}
                 >
                   <MenuItem value="">All</MenuItem>
-                  {availableStatuses.includes('approved') && (
-                    <MenuItem value="approved">Completed</MenuItem>
-                  )}
-                  {availableStatuses.includes('pending') && (
-                    <MenuItem value="pending">Pending</MenuItem>
-                  )}
-                  {availableStatuses.includes('rejected') && (
-                    <MenuItem value="rejected">Rejected</MenuItem>
-                  )}
-                  {availableStatuses.includes('uncompleted') && (
-                    <MenuItem value="uncompleted">Uncompleted</MenuItem>
-                  )}
+                  <MenuItem value="approved">Completed</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="uncompleted">Uncompleted</MenuItem>
                 </TextField>
               </Box>
 
@@ -406,13 +396,12 @@ export default function QuestDashboard() {
         </Box>
       )}
 
-      {/* Info Dialog */}
       <Dialog
         open={infoOpen}
         onClose={handleCloseInfo}
         fullWidth
         maxWidth="md"
-        container={document.body} // <-- ensures it renders on top
+        container={document.body}
       >
         <DialogTitle>{selectedQuest?.title}</DialogTitle>
         <DialogContent>
@@ -425,7 +414,6 @@ export default function QuestDashboard() {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={3000}
