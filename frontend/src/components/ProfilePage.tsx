@@ -1,16 +1,53 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserCompletions, type Completion } from '../dao/QuestDAO';
-import { Box, Typography, Paper, Alert, Chip, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Alert,
+  Chip,
+  CircularProgress,
+  Grid,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
+} from '@mui/material';
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
+import InfoIcon from '@mui/icons-material/Info';
 import { Helmet } from 'react-helmet-async';
 import { formatRelativeTimeWithTooltip } from '../utils/date';
+
+import { OrganizationService, Organization } from '../dao/OrganizationService';
+
+import FirstQuestIcon from '../assets/badges/first-quest.png';
+import TenQuestsIcon from '../assets/badges/ten-quests.png';
+import TwentyFiveQuestsIcon from '../assets/badges/twentyfive-quests.png';
+import JoinedOrgIcon from '../assets/badges/joined-first-org.png';
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [myOrganizations, setMyOrganizations] = useState<Organization[]>([]);
+
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [selectedQuest, setSelectedQuest] = useState<any>(null);
+
+  const handleOpenInfo = (quest: any) => {
+    setSelectedQuest(quest);
+    setInfoOpen(true);
+  };
+
+  const handleCloseInfo = () => {
+    setInfoOpen(false);
+    setSelectedQuest(null);
+  };
 
   useEffect(() => {
     const loadCompletions = async () => {
@@ -25,9 +62,19 @@ export default function ProfilePage() {
       }
     };
 
-    if (user) {
-      loadCompletions();
-    }
+    if (user) loadCompletions();
+  }, [user]);
+
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      try {
+        const orgs = await OrganizationService.getMyOrganizations();
+        setMyOrganizations(orgs);
+      } catch (err) {
+        console.error('Failed to load organizations', err);
+      }
+    };
+    if (user) loadOrganizations();
   }, [user]);
 
   const getStatusChip = (status: string) => {
@@ -44,33 +91,30 @@ export default function ProfilePage() {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 80 },
     {
-      field: 'quest_title',
-      headerName: 'Quest',
-      flex: 1,
-      minWidth: 200,
-      valueGetter: (_value, row) => row.quest?.title || 'Unknown Quest',
+      field: 'info',
+      headerName: '',
+      width: 60,
+      sortable: false,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenInfo(params.row.quest);
+              }}
+            >
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
-    {
-      field: 'quest_description',
-      headerName: 'Description',
-      flex: 1,
-      minWidth: 200,
-      valueGetter: (_value, row) => row.quest?.description || '',
-    },
-    {
-      field: 'category',
-      headerName: 'Category',
-      width: 150,
-      valueGetter: (_value, row) => row.quest?.category?.name || '—',
-    },
-    {
-      field: 'points',
-      headerName: 'Points',
-      width: 100,
-      valueGetter: (_value, row) => row.quest?.category?.score || 0,
-    },
+    { field: 'quest_title', headerName: 'Quest', flex: 1, minWidth: 200 },
+    { field: 'category', headerName: 'Category', width: 150 },
+    { field: 'points', headerName: 'Points', width: 100 },
     {
       field: 'status',
       headerName: 'Status',
@@ -111,6 +155,42 @@ export default function ProfilePage() {
   const approvedCount = completions.filter((c) => c.status === 'approved').length;
   const pendingCount = completions.filter((c) => c.status === 'pending').length;
 
+  // --- Badges ---
+  const badges = [];
+
+  if (approvedCount >= 1) {
+    badges.push({
+      name: 'First Quest',
+      description: 'Completed your first quest!',
+      icon: FirstQuestIcon,
+    });
+  }
+
+  if (approvedCount >= 10) {
+    badges.push({
+      name: 'Quest Grinder',
+      description: 'Completed 10 quests!',
+      icon: TenQuestsIcon,
+    });
+  }
+
+  if (approvedCount >= 25) {
+    badges.push({
+      name: 'Campus Legend',
+      description: 'Completed 25 quests!',
+      icon: TwentyFiveQuestsIcon,
+    });
+  }
+
+  // --- Joined First Organization ---
+  if (myOrganizations.length >= 1) {
+    badges.push({
+      name: 'Team Player',
+      description: 'Joined your first organization!',
+      icon: JoinedOrgIcon,
+    });
+  }
+
   return (
     <>
       <Helmet>
@@ -128,25 +208,74 @@ export default function ProfilePage() {
             <Typography variant="h6" gutterBottom>
               User Information
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Name:</strong> {user.name}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Email:</strong> {user.email}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Role:</strong> {user.role}
             </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
+            <Typography sx={{ mt: 2 }}>
               <strong>Total Points:</strong> {totalPoints}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Quests Completed:</strong> {approvedCount}
             </Typography>
-            <Typography variant="body1">
+            <Typography>
               <strong>Quests Pending:</strong> {pendingCount}
             </Typography>
           </Paper>
+        )}
+
+        {/* Badges Section (only if user has badges) */}
+        {badges.length > 0 && (
+          <>
+            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
+              Badges
+            </Typography>
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Grid container spacing={3} justifyContent="center" alignItems="center">
+                {badges.map((badge, i) => (
+                  <Grid item key={i}>
+                    <Tooltip title={badge.description} arrow>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          p: 2,
+                          borderRadius: 2,
+                          backgroundColor: 'background.default',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          textAlign: 'center',
+                          width: 150,
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={badge.icon}
+                          alt={badge.name}
+                          sx={{
+                            width: 64,
+                            height: 64,
+                            mb: 1,
+                            objectFit: 'contain',
+                          }}
+                        />
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {badge.name}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </>
         )}
 
         {/* Completions Table */}
@@ -172,6 +301,25 @@ export default function ProfilePage() {
             />
           </Paper>
         )}
+
+        {/* Quest Info Dialog */}
+        <Dialog
+          open={infoOpen}
+          onClose={handleCloseInfo}
+          fullWidth
+          maxWidth="md"
+          container={document.body}
+        >
+          <DialogTitle>{selectedQuest?.title}</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {selectedQuest?.description}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseInfo}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   );

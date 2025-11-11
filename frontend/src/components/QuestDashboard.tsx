@@ -48,14 +48,8 @@ export default function QuestDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [completingQuestId, setCompletingQuestId] = useState<number | null>(null);
 
-  // Pagination state
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0, // MUI DataGrid uses 0-based pages
-    pageSize: 10,
-  });
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [rowCount, setRowCount] = useState(0);
-
-  // Sorting state
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'created_at', sort: 'desc' },
   ]);
@@ -66,22 +60,26 @@ export default function QuestDashboard() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const [snack, setSnack] = useState<{
-    open: boolean;
-    msg: string;
-    severity: 'success' | 'error';
-  }>({ open: false, msg: '', severity: 'success' });
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  // Quest info modal state
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
+
   const [infoOpen, setInfoOpen] = useState(false);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
 
-  // Load quests with pagination and sorting
+  // Load quests and completions
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const page = paginationModel.page + 1; // Convert from 0-based to 1-based
+        const page = paginationModel.page + 1;
         const sortField = sortModel[0]?.field;
         const sortOrder =
           sortModel[0]?.sort === 'asc' ? 'asc' : sortModel[0]?.sort === 'desc' ? 'desc' : undefined;
@@ -122,7 +120,6 @@ export default function QuestDashboard() {
       setCategoryId(null);
       setSnack({ open: true, msg: 'Quest created', severity: 'success' });
 
-      // Refetch quests to show the new one
       const page = paginationModel.page + 1;
       const sortField = sortModel[0]?.field;
       const sortOrder =
@@ -169,9 +166,8 @@ export default function QuestDashboard() {
     }
   };
 
-  const getCompletionStatus = (questId: number): Completion | undefined => {
-    return completions.find((c) => c.quest_id === questId);
-  };
+  const getCompletionStatus = (questId: number): Completion | undefined =>
+    completions.find((c) => c.quest_id === questId);
 
   const getStatusChip = (status: string) => {
     switch (status) {
@@ -196,7 +192,16 @@ export default function QuestDashboard() {
     setSelectedQuest(null);
   };
 
-  const rows: GridRowsProp = quests.map((q) => ({
+  // Apply filters
+  const filteredQuests = quests.filter((q) => {
+    const matchesCategory = selectedCategory ? q.category?.name === selectedCategory : true;
+    const completion = getCompletionStatus(q.id);
+    const status = completion ? completion.status : 'uncompleted';
+    const matchesStatus = selectedStatus ? status === selectedStatus : true;
+    return matchesCategory && matchesStatus;
+  });
+
+  const rows: GridRowsProp = filteredQuests.map((q) => ({
     id: q.id,
     quest: q,
     title: q.title,
@@ -212,13 +217,15 @@ export default function QuestDashboard() {
       headerName: '',
       width: 60,
       sortable: false,
-      display: 'flex',
       renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <Tooltip title="View Details">
             <IconButton
               size="small"
-              onClick={() => handleOpenInfo(params.row.quest)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenInfo(params.row.quest);
+              }}
             >
               <InfoIcon fontSize="small" />
             </IconButton>
@@ -233,7 +240,6 @@ export default function QuestDashboard() {
       field: 'actions',
       headerName: 'Actions',
       width: 300,
-      display: 'flex',
       renderCell: (params) => {
         const completion = params.row.completion;
         const isCompleting = completingQuestId === params.row.id;
@@ -242,10 +248,18 @@ export default function QuestDashboard() {
         const canRequestCompletion = !completion && !isCreator;
 
         return (
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', height: '100%' }}>
-            {/* Student actions */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
             {completion ? (
-              getStatusChip(completion.status)
+              <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                {getStatusChip(completion.status)}
+              </Box>
             ) : canRequestCompletion ? (
               <Button
                 size="small"
@@ -257,7 +271,6 @@ export default function QuestDashboard() {
               </Button>
             ) : null}
 
-            {/* Teacher actions - only show for quests created by this user */}
             {isTeacher && isCreator && (
               <>
                 <Tooltip title="View Pending Approvals">
@@ -309,12 +322,60 @@ export default function QuestDashboard() {
             }}
           >
             <Typography variant="h4">Quests</Typography>
-            <Button variant="contained" onClick={() => setCreateOpen(true)}>
-              + New Quest
-            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  select
+                  label="Category"
+                  size="small"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  sx={{
+                    minWidth: 150,
+                    '& .MuiInputBase-root': { color: 'white' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255,255,255,0.3)',
+                    },
+                  }}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField
+                  select
+                  label="Status"
+                  size="small"
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  sx={{
+                    minWidth: 150,
+                    '& .MuiInputBase-root': { color: 'white' },
+                    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255,255,255,0.3)',
+                    },
+                  }}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  <MenuItem value="approved">Completed</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="uncompleted">Uncompleted</MenuItem>
+                </TextField>
+              </Box>
+
+              <Button variant="contained" onClick={() => setCreateOpen(true)}>
+                + New Quest
+              </Button>
+            </Box>
           </Box>
 
-          {/* DataGrid */}
           <Paper sx={{ width: '100%' }}>
             <DataGrid
               rows={rows}
@@ -337,152 +398,24 @@ export default function QuestDashboard() {
         </Box>
       )}
 
-      {/* Create dialog */}
-      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Create a quest</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Title"
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <TextField
-            select
-            label="Category"
-            value={categoryId ?? ''}
-            onChange={(e) => setCategoryId(Number(e.target.value))}
-            fullWidth
-            margin="normal"
-          >
-            {categories.map((cat) => (
-              <MenuItem key={cat.id} value={cat.id}>
-                {cat.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            margin="dense"
-            label="Description"
-            fullWidth
-            multiline
-            minRows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreate} disabled={!title.trim()}>
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Quest Info Modal */}
-      <Dialog open={infoOpen} onClose={handleCloseInfo} fullWidth maxWidth="md">
+      <Dialog
+        open={infoOpen}
+        onClose={handleCloseInfo}
+        fullWidth
+        maxWidth="md"
+        container={document.body}
+      >
         <DialogTitle>{selectedQuest?.title}</DialogTitle>
         <DialogContent>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Description
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {selectedQuest?.description}
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Category
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {selectedQuest?.category?.name ?? '—'}
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Points
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {selectedQuest?.category?.score ?? 0}
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Created
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {selectedQuest?.created_at
-                ? formatRelativeTimeWithTooltip(selectedQuest.created_at).full
-                : '—'}
-            </Typography>
-          </Box>
-
-          {/* Actions in modal */}
-          {selectedQuest && (
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              {(() => {
-                const completion = getCompletionStatus(selectedQuest.id);
-                const isCompleting = completingQuestId === selectedQuest.id;
-                const isTeacher = user?.role === 'teacher';
-                const isCreator = selectedQuest.creator_id === user?.id;
-                const canRequestCompletion = !completion && !isCreator;
-
-                return (
-                  <>
-                    {/* Student actions */}
-                    {completion ? (
-                      <Box>{getStatusChip(completion.status)}</Box>
-                    ) : canRequestCompletion ? (
-                      <Button
-                        variant="outlined"
-                        onClick={() => {
-                          handleComplete(selectedQuest.id);
-                          handleCloseInfo();
-                        }}
-                        disabled={isCompleting}
-                      >
-                        {isCompleting ? <CircularProgress size={20} /> : 'Request Completion'}
-                      </Button>
-                    ) : null}
-
-                    {/* Teacher actions */}
-                    {isTeacher && isCreator && (
-                      <>
-                        <Button
-                          variant="contained"
-                          startIcon={<PendingActionsIcon />}
-                          onClick={() => {
-                            navigate(`/quests/${selectedQuest.id}/pending`);
-                            handleCloseInfo();
-                          }}
-                        >
-                          View Pending Approvals
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          startIcon={<GroupAddIcon />}
-                          onClick={() => {
-                            navigate(`/quests/${selectedQuest.id}/bulk-assign`);
-                            handleCloseInfo();
-                          }}
-                        >
-                          Bulk Assign Completions
-                        </Button>
-                      </>
-                    )}
-                  </>
-                );
-              })()}
-            </Box>
-          )}
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {selectedQuest?.description}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseInfo}>Close</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={3000}

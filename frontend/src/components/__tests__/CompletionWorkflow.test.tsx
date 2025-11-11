@@ -576,7 +576,9 @@ describe('Completion Workflow - Authorization', () => {
       },
     ];
 
-    jest.mocked(QuestDAO.getQuests).mockResolvedValue(createQuestsResponse(questsWithStudentCreator));
+    jest
+      .mocked(QuestDAO.getQuests)
+      .mockResolvedValue(createQuestsResponse(questsWithStudentCreator));
     jest.mocked(QuestDAO.getUserCompletions).mockResolvedValue([]);
 
     render(
