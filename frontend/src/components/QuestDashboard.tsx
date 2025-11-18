@@ -63,13 +63,11 @@ export default function QuestDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
-    {
-      open: false,
-      msg: '',
-      severity: 'success',
-    }
-  );
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>({
+    open: false,
+    msg: '',
+    severity: 'success',
+  });
 
   const [infoOpen, setInfoOpen] = useState(false);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
@@ -248,18 +246,9 @@ export default function QuestDashboard() {
         const canRequestCompletion = !completion && !isCreator;
 
         return (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', height: '100%' }}>
             {completion ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                {getStatusChip(completion.status)}
-              </Box>
+              getStatusChip(completion.status)
             ) : canRequestCompletion ? (
               <Button
                 size="small"
@@ -398,6 +387,51 @@ export default function QuestDashboard() {
         </Box>
       )}
 
+      {/* Create Quest Dialog */}
+      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Create a quest</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Title"
+            fullWidth
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <TextField
+            select
+            label="Category"
+            value={categoryId ?? ''}
+            onChange={(e) => setCategoryId(Number(e.target.value))}
+            fullWidth
+            margin="normal"
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            margin="dense"
+            label="Description"
+            fullWidth
+            multiline
+            minRows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreate} disabled={!title.trim()}>
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Quest Info Dialog */}
       <Dialog
         open={infoOpen}
         onClose={handleCloseInfo}
